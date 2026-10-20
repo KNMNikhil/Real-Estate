@@ -1,4 +1,4 @@
-import { consultants, properties } from "../data/dummyData";
+import { consultants, moreProperties, properties } from "../data/dummyData";
 import { KEYS, readJSON, writeJSON } from "./storage";
 
 export const findConsultantByPin = (pin) =>
@@ -9,7 +9,7 @@ export const findConsultantById = (id) =>
 
 const getSubmittedProperties = () => readJSON(KEYS.properties, []);
 
-export const getAllProperties = () => [...getSubmittedProperties(), ...properties];
+export const getAllProperties = () => [...getSubmittedProperties(), ...properties, ...moreProperties];
 
 export const findPropertyById = (id) =>
   getAllProperties().find((p) => p.id === id) ?? null;

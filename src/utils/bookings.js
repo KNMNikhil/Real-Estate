@@ -22,6 +22,8 @@ export function saveBooking(booking) {
   return writeJSON(KEYS.bookings, all);
 }
 
+export const getUserBookingsRaw = () => getStoredBookings();
+
 // Bookings made by one user, newest first.
 export const getUserBookings = (contact) =>
   getStoredBookings()

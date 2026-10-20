@@ -1,37 +1,17 @@
-import { useState } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { Link, NavLink } from "react-router-dom";
 import Logo from "./Logo";
 
-const NAV = [
-  { to: "/dashboard", label: "Dashboard", icon: "▦", end: true },
-  { to: "/dashboard/buy", label: "Buy a Property", icon: "⌂" },
-  { to: "/dashboard/sell", label: "Sell a Property", icon: "₹" },
-];
+export const STORE_KEY = "lg_sidebar_collapsed";
 
-const STORE_KEY = "lg_sidebar_collapsed";
-
-export default function Sidebar({ collapsed, onToggle }) {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    logout();
-    navigate("/", { replace: true });
-  };
-
+// Generic app sidebar used by the customer and agent dashboards.
+export default function Sidebar({ collapsed, onToggle, nav, brandTo, profileTo, name, roleLabel, onLogout }) {
   return (
     <aside className={`sidebar ${collapsed ? "is-collapsed" : ""}`}>
       <div className="sidebar__top">
-        <Link to="/dashboard" className="sidebar__brand" aria-label="Living Gods Real Estates home">
-          <span className="sidebar__slot">
-            <Logo size={28} />
-          </span>
-          <span className="sidebar__label">Living Gods</span>
+        <Link to={brandTo} className="sidebar__brand" aria-label="Living Gods Real Estates home">
+          <Logo size={28} />
+          <span className="sidebar__brand-text">Living Gods</span>
         </Link>
-      </div>
-
-      <div className="sidebar__toggle-row">
         <button
           type="button"
           className="sidebar__toggle"
@@ -43,8 +23,10 @@ export default function Sidebar({ collapsed, onToggle }) {
         </button>
       </div>
 
-      <nav className="sidebar__nav" aria-label="Dashboard">
-        {NAV.map((item) => (
+      {roleLabel && <span className="sidebar__role">{roleLabel}</span>}
+
+      <nav className="sidebar__nav" aria-label="Main">
+        {nav.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
@@ -60,22 +42,20 @@ export default function Sidebar({ collapsed, onToggle }) {
 
       <div className="sidebar__foot">
         <NavLink
-          to="/dashboard/profile"
-          title={collapsed ? user?.name : undefined}
+          to={profileTo}
+          title={collapsed ? name : undefined}
           className={({ isActive }) => `sidebar__link sidebar__user ${isActive ? "is-active" : ""}`}
         >
           <span className="sidebar__slot">
-            <span className="sidebar__avatar" aria-hidden="true">{user?.name?.[0] ?? "?"}</span>
+            <span className="sidebar__avatar" aria-hidden="true">{name?.[0] ?? "?"}</span>
           </span>
-          <span className="sidebar__label">{user?.name}</span>
+          <span className="sidebar__label">{name}</span>
         </NavLink>
-        <button type="button" className="sidebar__logout" onClick={handleLogout} title={collapsed ? "Logout" : undefined}>
-          <span className="sidebar__slot sidebar__icon" aria-hidden="true">⎋</span>
-          <span className="sidebar__label">Logout</span>
+        <button type="button" className="sidebar__logout" onClick={onLogout} aria-label="Logout">
+          <span className="sidebar__logout-text">Logout</span>
+          <span className="sidebar__logout-icon" aria-hidden="true">⎋</span>
         </button>
       </div>
     </aside>
   );
 }
-
-export { STORE_KEY };

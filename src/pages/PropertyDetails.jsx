@@ -73,6 +73,7 @@ export default function PropertyDetails() {
       kind: "buy",
       propertyId: property.id,
       userContact: user.contact,
+      userName: user.name,
     });
     setConfirmOpen(false);
     setVisitOpen(true);

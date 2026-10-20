@@ -101,6 +101,7 @@ export default function SellFlow() {
       kind: "sell",
       propertyId: property.id,
       userContact: user.contact,
+      userName: user.name,
     });
     setSaveNote(
       result.photosDropped ? "Your photos were too large to store in this demo, so the listing was saved without them." : ""

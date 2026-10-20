@@ -1,36 +1,28 @@
-import { useState } from "react";
-import { Outlet } from "react-router-dom";
-import Sidebar, { STORE_KEY } from "../components/Sidebar";
+import { useNavigate } from "react-router-dom";
+import AppShell from "../components/AppShell";
+import { useAuth } from "../context/AuthContext";
 
-const readCollapsed = () => {
-  try {
-    return localStorage.getItem(STORE_KEY) === "1";
-  } catch {
-    return false;
-  }
-};
+const NAV = [
+  { to: "/dashboard", label: "Dashboard", icon: "▦", end: true },
+  { to: "/dashboard/marketplace", label: "Marketplace", icon: "◈" },
+  { to: "/dashboard/buy", label: "Buy a Property", icon: "⌂" },
+  { to: "/dashboard/sell", label: "Sell a Property", icon: "₹" },
+  { to: "/dashboard/activities", label: "Activities", icon: "☰" },
+];
 
 export default function DashboardLayout() {
-  const [collapsed, setCollapsed] = useState(readCollapsed);
-
-  const toggle = () =>
-    setCollapsed((c) => {
-      try {
-        localStorage.setItem(STORE_KEY, c ? "0" : "1");
-      } catch {
-        /* ignore */
-      }
-      return !c;
-    });
-
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   return (
-    <div className={`dashboard ${collapsed ? "is-collapsed" : ""}`}>
-      <Sidebar collapsed={collapsed} onToggle={toggle} />
-      <div className="dashboard__main">
-        <main className="dashboard__content">
-          <Outlet />
-        </main>
-      </div>
-    </div>
+    <AppShell
+      nav={NAV}
+      brandTo="/dashboard"
+      profileTo="/dashboard/profile"
+      name={user?.name}
+      onLogout={() => {
+        logout();
+        navigate("/", { replace: true });
+      }}
+    />
   );
 }

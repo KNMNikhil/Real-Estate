@@ -1,5 +1,12 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Activities from "./pages/Activities";
+import AgentCalendar from "./pages/AgentCalendar";
+import AgentDashboard from "./pages/AgentDashboard";
+import AgentLayout from "./pages/AgentLayout";
+import AgentLogin from "./pages/AgentLogin";
+import AgentProfile from "./pages/AgentProfile";
+import Marketplace from "./pages/Marketplace";
 import BuyList from "./pages/BuyList";
 import Consultants from "./pages/Consultants";
 import DashboardLayout from "./pages/DashboardLayout";
@@ -33,9 +40,25 @@ export default function App() {
         <Route path="buy/:propertyId" element={<PropertyDetails />} />
         <Route path="sell" element={<SellFlow />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="marketplace" element={<Marketplace />} />
+        <Route path="activities" element={<Activities />} />
         <Route path="consultants" element={<Consultants />} />
         <Route path="services" element={<Navigate to="/dashboard" replace />} />
         <Route path="functions/*" element={<Navigate to="/dashboard/buy" replace />} />
+      </Route>
+
+      <Route path="/agent/login" element={<AgentLogin />} />
+      <Route
+        path="/agent"
+        element={
+          <ProtectedRoute role="agent">
+            <AgentLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<AgentDashboard />} />
+        <Route path="calendar" element={<AgentCalendar />} />
+        <Route path="profile" element={<AgentProfile />} />
       </Route>
 
       <Route path="*" element={<NotFound />} />

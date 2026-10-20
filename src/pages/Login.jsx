@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import AuthLayout from "../components/AuthLayout";
 import { useAuth } from "../context/AuthContext";
 import { demoUser } from "../data/dummyData";
@@ -141,6 +141,9 @@ export default function Login({ mode: initialMode = "signup" }) {
         <button type="button" className="link-button" onClick={() => switchMode(isSignup ? "login" : "signup")}>
           {isSignup ? "Sign in" : "Sign up"}
         </button>
+      </p>
+      <p className="auth-split__agent">
+        Are you an agent? <Link to="/agent/login">Agent login</Link>
       </p>
     </AuthLayout>
   );

@@ -145,6 +145,26 @@ export const properties = [
   },
 ];
 
+
+const img = (seed) => `https://picsum.photos/seed/${seed}/800/500`;
+
+// More projects so the marketplace has something to browse. Pincodes match the consultants above.
+export const moreProperties = [
+  { id: "P006", name: "Orchid Heights", type: "Apartment", pincode: "600089", area: "Nandambakkam", sqft: 1120, bedrooms: 2, bathrooms: 2, floor: "6th of 9", facing: "North", price: 6900000, address: "21, Ring Road, Nandambakkam, Chennai - 600089", description: "Modern 2BHK with club house and gym access.", images: [img("p006a"), img("p006b")], consultantId: "C001", uploadedAt: "2026-10-12T10:00:00" },
+  { id: "P007", name: "Silver Oak Plots", type: "Plot", pincode: "600089", area: "Nandambakkam", sqft: 1800, bedrooms: null, bathrooms: null, floor: "N/A", facing: "East", price: 9800000, address: "Survey No. 14, Nandambakkam, Chennai - 600089", description: "CMDA approved plots in a gated layout.", images: [img("p007a")], consultantId: "C001", uploadedAt: "2026-10-08T09:30:00" },
+  { id: "P008", name: "Marina Residency", type: "Apartment", pincode: "600001", area: "Chennai GPO / Parrys", sqft: 1350, bedrooms: 3, bathrooms: 2, floor: "8th of 12", facing: "East", price: 11200000, address: "4, Beach Road, Parrys, Chennai - 600001", description: "Sea-facing 3BHK close to the business district.", images: [img("p008a"), img("p008b")], consultantId: "C002", uploadedAt: "2026-10-14T12:00:00" },
+  { id: "P009", name: "Old Town Villa", type: "Villa", pincode: "600001", area: "Chennai GPO / Parrys", sqft: 2600, bedrooms: 4, bathrooms: 4, floor: "G+2", facing: "South", price: 24500000, address: "18, Armenian Street, Parrys, Chennai - 600001", description: "Heritage-style villa with courtyard and parking for three cars.", images: [img("p009a")], consultantId: "C002", uploadedAt: "2026-09-28T15:10:00" },
+  { id: "P010", name: "Riverside Towers", type: "Apartment", pincode: "600020", area: "Adyar", sqft: 1650, bedrooms: 3, bathrooms: 3, floor: "10th of 14", facing: "North", price: 18900000, address: "9, Lattice Bridge Road, Adyar, Chennai - 600020", description: "Premium riverside apartment with 24x7 security.", images: [img("p010a"), img("p010b")], consultantId: "C003", uploadedAt: "2026-10-16T09:20:00" },
+  { id: "P011", name: "Banyan House", type: "Independent House", pincode: "600020", area: "Adyar", sqft: 2100, bedrooms: 4, bathrooms: 3, floor: "G+1", facing: "West", price: 21500000, address: "3, Gandhi Nagar, Adyar, Chennai - 600020", description: "Corner house with a mature garden and car porch.", images: [img("p011a")], consultantId: "C003", uploadedAt: "2026-10-03T11:40:00" },
+  { id: "P012", name: "Coastal Breeze Apartments", type: "Apartment", pincode: "600041", area: "Thiruvanmiyur", sqft: 1020, bedrooms: 2, bathrooms: 2, floor: "3rd of 6", facing: "East", price: 7600000, address: "27, East Coast Road, Thiruvanmiyur, Chennai - 600041", description: "Walkable to the beach and metro with covered parking.", images: [img("p012a"), img("p012b")], consultantId: "C004", uploadedAt: "2026-10-13T13:30:00" },
+  { id: "P013", name: "Green Acres Plots", type: "Plot", pincode: "600041", area: "Thiruvanmiyur", sqft: 3000, bedrooms: null, bathrooms: null, floor: "N/A", facing: "North", price: 15500000, address: "Survey No. 52, Thiruvanmiyur, Chennai - 600041", description: "Residential plots with tarred roads and drainage.", images: [img("p013a")], consultantId: "C004", uploadedAt: "2026-09-25T10:15:00" },
+];
+
+const firstNames = ["Ravi", "Anita", "Karthik", "Divya", "Farhan", "Lakshmi", "Vignesh", "Sneha", "Arjun", "Pooja", "Suresh", "Harini"];
+const lastNames = ["Kumar", "Sharma", "Iyer"];
+// "Ravi Kumar" is first: he is the demo customer.
+export const customerNames = lastNames.flatMap((last) => firstNames.map((first) => `${first} ${last}`));
+
 export const bookedSlots = {
   C001: {
     "2026-10-22": ["10:00", "11:30"],
