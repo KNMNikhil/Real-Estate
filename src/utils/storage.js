@@ -2,6 +2,7 @@
 export const KEYS = {
   user: "lg_user",
   pending: "lg_pending_login",
+  accounts: "lg_accounts",
   properties: "lg_properties",
   bookings: "lg_bookings",
 };

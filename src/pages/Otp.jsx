@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { DEMO_OTP } from "../data/dummyData";
-import Logo from "../components/Logo";
+import AuthLayout from "../components/AuthLayout";
 import { maskedPhone } from "../utils/format";
 
 export default function Otp() {
@@ -44,13 +44,9 @@ export default function Otp() {
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-card card">
-        <Link to="/" className="auth-card__brand" aria-label="Back to home">
-          <Logo size={52} />
-        </Link>
+    <AuthLayout>
         <h1>Verify OTP</h1>
-        <p className="muted">OTP sent to {maskedPhone(pending.contact)}</p>
+        <p className="auth-split__sub">OTP sent to {maskedPhone(pending.contact)}</p>
 
         <form onSubmit={handleSubmit} noValidate>
           <div className="field">
@@ -81,7 +77,7 @@ export default function Otp() {
               </p>
             )}
           </div>
-          <button type="submit" className="btn btn--primary btn--block">
+          <button type="submit" className="btn btn--metal btn--block">
             Verify
           </button>
         </form>
@@ -95,7 +91,6 @@ export default function Otp() {
           </button>
           <Link to="/login">Change details</Link>
         </div>
-      </div>
-    </div>
+    </AuthLayout>
   );
 }

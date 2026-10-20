@@ -61,7 +61,7 @@ export default function Landing() {
         </ul>
         <div className="landing__actions">
           <Link to="/login" className="landing__login">Login</Link>
-          <button type="button" className="btn btn--soft" onClick={() => navigate("/login")}>
+          <button type="button" className="btn btn--gold btn--pill" onClick={() => navigate("/signup")}>
             Get started
           </button>
         </div>

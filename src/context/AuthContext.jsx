@@ -18,9 +18,14 @@ export function AuthProvider({ children }) {
   const completeLogin = useCallback((details) => {
     const saved = { name: details.name, age: details.age, contact: details.contact };
     writeJSON(KEYS.user, saved);
+    const accounts = readJSON(KEYS.accounts, {});
+    writeJSON(KEYS.accounts, { ...accounts, [saved.contact]: saved });
     removeKey(KEYS.pending);
     setUser(saved);
   }, []);
+
+  // Accounts that have completed sign up on this device, keyed by contact number.
+  const findAccount = useCallback((contact) => readJSON(KEYS.accounts, {})[contact] ?? null, []);
 
   const logout = useCallback(() => {
     removeKey(KEYS.user);
@@ -29,8 +34,8 @@ export function AuthProvider({ children }) {
   }, []);
 
   const value = useMemo(
-    () => ({ user, requestOtp, getPending, completeLogin, logout }),
-    [user, requestOtp, getPending, completeLogin, logout]
+    () => ({ user, requestOtp, getPending, completeLogin, findAccount, logout }),
+    [user, requestOtp, getPending, completeLogin, findAccount, logout]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
