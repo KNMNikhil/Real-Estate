@@ -110,14 +110,16 @@ export default function SellFlow() {
     setSuccessOpen(true);
   };
 
-  const summary = [
-    { label: "Area", value: consultant ? `${consultant.areaName} · ${pin}` : "", done: step > 1 },
-    { label: "Agent", value: consultant?.name ?? "", done: step > 2 },
-    { label: "Date", value: date ? formatLongDate(date) : "", done: step > 3 },
-    { label: "Time", value: time ? formatTime(time) : "", done: step > 4 },
-    { label: "Agreement", value: agreed ? "Accepted" : "", done: step > 5 },
-    { label: "Property", value: "", done: false },
-  ];
+  const TIPS = {
+    1: ["Why your PIN?", ["Each area has its own dedicated agent.", "Your agent knows local prices and buyers.", "Enter the PIN where the property is located, not where you live."]],
+    2: ["What your agent does", ["Visits and verifies your property.", "Helps you set a fair price.", "Handles buyer visits and paperwork with you."]],
+    3: ["Choosing a date", ["Bookings open from tomorrow.", "Pick a day when you or a representative can be at the property.", "You can pick a later month with the arrows."]],
+    4: ["Choosing a time", ["Slots are 30 minutes apart.", "Greyed-out slots are already booked.", "Morning slots usually have the best light for photos."]],
+    5: ["About the agreement", ["It sets out how we list and promote your property.", "Read it fully before you accept.", "Your agent can explain any clause."]],
+    6: ["Tips for a great listing", ["Add clear, well-lit photos of every room.", "Use the real built-up area and expected price.", "A detailed description gets more visits."]],
+  };
+  const [tipTitle, tipList] = TIPS[step];
+  const DOCS = ["Sale deed or title document", "Encumbrance certificate", "Latest property tax receipt", "Your photo ID"];
 
   const SAMPLE_PINS = ["600089", "600001", "600020", "600041"];
 
@@ -240,19 +242,37 @@ export default function SellFlow() {
           )}
         </div>
 
-        <aside className="sell__aside" aria-label="Your listing progress">
-          <h3>Your listing</h3>
-          <ul>
-            {summary.map((row) => (
-              <li key={row.label} className={row.done ? "is-done" : ""}>
-                <span className="sell__tick" aria-hidden="true">{row.done ? "✓" : ""}</span>
-                <span>
-                  <strong>{row.label}</strong>
-                  <em>{row.value || "Pending"}</em>
-                </span>
-              </li>
-            ))}
-          </ul>
+        <aside className="sell__aside" aria-label="Helpful information">
+          <section>
+            <h3>{tipTitle}</h3>
+            <ul className="tips">
+              {tipList.map((t) => (
+                <li key={t}>{t}</li>
+              ))}
+            </ul>
+          </section>
+
+          {step >= 3 && (
+            <section>
+              <h3>Keep these ready</h3>
+              <ul className="docs">
+                {DOCS.map((d) => (
+                  <li key={d}>{d}</li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {consultant && (
+            <section className="help">
+              <h3>Need help?</h3>
+              <p>
+                Call <strong>{consultant.name}</strong>
+                <br />
+                <a href={`tel:+91${consultant.contact}`}>{consultant.contact}</a>
+              </p>
+            </section>
+          )}
         </aside>
       </div>
 

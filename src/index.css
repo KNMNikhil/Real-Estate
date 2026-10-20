@@ -2991,54 +2991,52 @@ textarea {
   border: 1px solid rgba(255, 255, 255, 0.9);
   box-shadow: 0 8px 28px rgba(20, 23, 46, 0.07);
 }
+.sell__aside {
+  display: grid;
+  gap: 18px;
+}
+.sell__aside section + section {
+  padding-top: 18px;
+  border-top: 1px solid rgba(20, 23, 46, 0.08);
+}
 .sell__aside h3 {
-  margin: 0 0 14px;
+  margin: 0 0 10px;
   font-size: 1rem;
 }
-.sell__aside ul {
+.tips,
+.docs {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 14px;
-}
-.sell__aside li {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-}
-.sell__aside li span:last-child {
-  display: grid;
-  min-width: 0;
-}
-.sell__aside strong {
+  gap: 10px;
   font-size: 0.9rem;
-  font-weight: 500;
-  color: #14161f;
+  color: #4a4f66;
 }
-.sell__aside em {
-  font-style: normal;
-  font-size: 0.85rem;
-  color: #9095a5;
-  overflow-wrap: anywhere;
+.tips li,
+.docs li {
+  position: relative;
+  padding-left: 22px;
 }
-.sell__aside li.is-done em {
-  color: #5a5f70;
+.tips li::before {
+  content: "✦";
+  position: absolute;
+  left: 0;
+  color: #e0a030;
 }
-.sell__tick {
-  flex: 0 0 22px;
-  height: 22px;
-  margin-top: 1px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  font-size: 0.75rem;
-  border: 2px solid #e3e6ef;
-  color: #3b2a10;
+.docs li::before {
+  content: "☐";
+  position: absolute;
+  left: 0;
+  color: #b9741f;
 }
-.sell__aside li.is-done .sell__tick {
-  background: linear-gradient(135deg, #ffe9b8, #ffc9a3);
-  border-color: transparent;
+.help p {
+  margin: 0;
+  font-size: 0.92rem;
+  color: #4a4f66;
+}
+.help a {
+  color: #b9741f;
 }
 .sell__section-title {
   margin: 0 0 14px;
@@ -3091,9 +3089,6 @@ textarea {
   .sell__aside {
     position: static;
     order: -1;
-  }
-  .sell__aside ul {
-    grid-template-columns: repeat(2, 1fr);
   }
 }
 
