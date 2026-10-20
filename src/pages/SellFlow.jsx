@@ -15,7 +15,7 @@ import { formatLongDate, formatTime } from "../utils/dates";
 import { findConsultantByPin, saveSubmittedProperty } from "../utils/lookup";
 import useScrollTop from "../utils/useScrollTop";
 
-const STEPS = ["Area", "Agent", "Date", "Time", "MOU", "Property"];
+const STEPS = ["Area", "Agent", "Date", "Time", "Agreement", "Property"];
 
 export default function SellFlow() {
   const { user } = useAuth();
@@ -110,123 +110,151 @@ export default function SellFlow() {
     setSuccessOpen(true);
   };
 
+  const summary = [
+    { label: "Area", value: consultant ? `${consultant.areaName} · ${pin}` : "", done: step > 1 },
+    { label: "Agent", value: consultant?.name ?? "", done: step > 2 },
+    { label: "Date", value: date ? formatLongDate(date) : "", done: step > 3 },
+    { label: "Time", value: time ? formatTime(time) : "", done: step > 4 },
+    { label: "Agreement", value: agreed ? "Accepted" : "", done: step > 5 },
+    { label: "Property", value: "", done: false },
+  ];
+
+  const SAMPLE_PINS = ["600089", "600001", "600020", "600041"];
+
   return (
-    <div className="narrow">
-      <h1>Selling a Property</h1>
+    <div className="sell">
+      <header className="sell__head">
+        <h1>Sell your property</h1>
+        <p className="muted">Meet your area agent, sign the agreement and list your property in a few easy steps.</p>
+      </header>
       <StepIndicator steps={STEPS} current={step} />
 
-      {step === 1 && (
-        <div className="narrow">
-          <div className="card step-card">
-            <PinForm
-              label="Enter the Area PIN Code"
-              buttonLabel="Enter"
-              initialValue={pin}
-              onChange={() => setNoConsultant(false)}
-              onSubmit={handlePin}
-            />
-            {noConsultant && <p className="notice">No consultant available for this area yet.</p>}
-          </div>
-        </div>
-      )}
-
-      {step === 2 && consultant && (
-        <div className="narrow">
-          <ConsultantCard consultant={consultant} title="Your area consultant" />
-          <div className="actions">
-            <button type="button" className="btn btn--ghost" onClick={() => setStep(1)}>
-              Change PIN
-            </button>
-            <button type="button" className="btn btn--primary" onClick={() => setStep(3)}>
-              Proceed
-            </button>
-          </div>
-        </div>
-      )}
-
-      {step === 3 && (
-        <div className="narrow">
-          <DateStep
-            value={date}
-            onChange={handleDateChange}
-            onBack={() => setStep(2)}
-            onNext={() => setStep(4)}
-          />
-        </div>
-      )}
-
-      {step === 4 && (
-        <div className="narrow">
-          {formError && (
-            <p className="notice notice--error" role="alert">
-              {formError}
-            </p>
+      <div className="sell__layout">
+        <div className="sell__main">
+          {step === 1 && (
+            <section className="card step-card sell-card">
+              <span className="sell-card__icon" aria-hidden="true">⌖</span>
+              <h2>Where is your property?</h2>
+              <p className="muted">We will connect you with the agent who covers that area.</p>
+              <PinForm
+                label="Area PIN code"
+                buttonLabel="Find agent"
+                initialValue={pin}
+                onChange={() => setNoConsultant(false)}
+                onSubmit={handlePin}
+              />
+              {noConsultant && <p className="notice">No consultant available for this area yet.</p>}
+              <div className="chips">
+                <span className="muted">Try:</span>
+                {SAMPLE_PINS.map((p) => (
+                  <button key={p} type="button" className="chip" onClick={() => handlePin(p)}>
+                    {p}
+                  </button>
+                ))}
+              </div>
+            </section>
           )}
-          <TimeStep
-            consultantId={consultant.id}
-            date={date}
-            value={time}
-            onChange={(t) => {
-              setTime(t);
-              setFormError("");
-            }}
-            onBack={() => setStep(3)}
-            onNext={() => setConfirmOpen(true)}
-          />
-        </div>
-      )}
 
-      {step === 5 && (
-        <div className="narrow">
-          <section className="card step-card" aria-labelledby="mou-title">
-            <h2 id="mou-title">Enter MOU</h2>
-            <div className="mou-box" tabIndex={0} role="region" aria-label="MOU terms">
-              {mouText}
-            </div>
-            <label className="checkbox">
-              <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
-              <span>I agree to the terms and conditions.</span>
-            </label>
-            <div className="actions">
-              <button type="button" className="btn btn--ghost" onClick={() => setStep(4)}>
-                Back
-              </button>
-              {agreed && (
-                <button type="button" className="btn btn--primary" onClick={() => setStep(6)}>
-                  Next
+          {step === 2 && consultant && (
+            <>
+              <ConsultantCard consultant={consultant} title="Your area agent" />
+              <div className="actions">
+                <button type="button" className="btn btn--ghost" onClick={() => setStep(1)}>
+                  Change PIN
                 </button>
-              )}
-            </div>
-          </section>
-        </div>
-      )}
-
-      {step === 6 && (
-        <section className="card step-card" aria-labelledby="details-title">
-          <h2 id="details-title">Property Details</h2>
-          {formError && (
-            <p className="notice notice--error" role="alert">
-              {formError}
-            </p>
+                <button type="button" className="btn btn--primary" onClick={() => setStep(3)}>
+                  Continue
+                </button>
+              </div>
+            </>
           )}
-          <PropertyForm
-            initial={{
-              pincode: pin,
-              area: consultant.areaName,
-              ownerName: user.name,
-              ownerContact: user.contact,
-            }}
-            pinLocked
-            submitting={submitting}
-            onSubmit={handleSubmit}
-          />
-          <div className="actions">
-            <button type="button" className="btn btn--ghost" onClick={() => setStep(5)}>
-              Back
-            </button>
-          </div>
-        </section>
-      )}
+
+          {step === 3 && (
+            <DateStep value={date} onChange={handleDateChange} onBack={() => setStep(2)} onNext={() => setStep(4)} />
+          )}
+
+          {step === 4 && (
+            <>
+              {formError && (
+                <p className="notice notice--error" role="alert">
+                  {formError}
+                </p>
+              )}
+              <TimeStep
+                consultantId={consultant.id}
+                date={date}
+                value={time}
+                onChange={(t) => {
+                  setTime(t);
+                  setFormError("");
+                }}
+                onBack={() => setStep(3)}
+                onNext={() => setConfirmOpen(true)}
+              />
+            </>
+          )}
+
+          {step === 5 && (
+            <section className="card step-card" aria-labelledby="mou-title">
+              <h2 id="mou-title">Agreement (MOU)</h2>
+              <p className="muted">Please read the terms before listing your property.</p>
+              <div className="mou-box" tabIndex={0} role="region" aria-label="MOU terms">
+                {mouText}
+              </div>
+              <label className="checkbox">
+                <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
+                <span>I agree to the terms and conditions.</span>
+              </label>
+              <div className="actions">
+                <button type="button" className="btn btn--ghost" onClick={() => setStep(4)}>
+                  Back
+                </button>
+                <button type="button" className="btn btn--primary" disabled={!agreed} onClick={() => setStep(6)}>
+                  Continue
+                </button>
+              </div>
+            </section>
+          )}
+
+          {step === 6 && (
+            <section aria-labelledby="details-title">
+              <h2 id="details-title" className="sell__section-title">Property details</h2>
+              {formError && (
+                <p className="notice notice--error" role="alert">
+                  {formError}
+                </p>
+              )}
+              <PropertyForm
+                initial={{
+                  pincode: pin,
+                  area: consultant.areaName,
+                  ownerName: user.name,
+                  ownerContact: user.contact,
+                }}
+                pinLocked
+                submitting={submitting}
+                onSubmit={handleSubmit}
+                onBack={() => setStep(5)}
+              />
+            </section>
+          )}
+        </div>
+
+        <aside className="sell__aside" aria-label="Your listing progress">
+          <h3>Your listing</h3>
+          <ul>
+            {summary.map((row) => (
+              <li key={row.label} className={row.done ? "is-done" : ""}>
+                <span className="sell__tick" aria-hidden="true">{row.done ? "✓" : ""}</span>
+                <span>
+                  <strong>{row.label}</strong>
+                  <em>{row.value || "Pending"}</em>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </aside>
+      </div>
 
       {confirmOpen && (
         <SlotConfirmModal
@@ -245,7 +273,7 @@ export default function SellFlow() {
               type="button"
               className="btn btn--primary"
               autoFocus
-              onClick={() => navigate("/dashboard/sell")}
+              onClick={() => navigate(`/dashboard/marketplace?pin=${pin}`)}
             >
               Okay
             </button>

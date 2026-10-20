@@ -1,10 +1,11 @@
 import { Link, NavLink } from "react-router-dom";
+import Icon from "./Icon";
 import Logo from "./Logo";
 
 export const STORE_KEY = "lg_sidebar_collapsed";
 
 // Generic app sidebar used by the customer and agent dashboards.
-export default function Sidebar({ collapsed, onToggle, nav, brandTo, profileTo, name, roleLabel, onLogout }) {
+export default function Sidebar({ collapsed, onToggle, nav, brandTo, profileTo, name, onLogout }) {
   return (
     <aside className={`sidebar ${collapsed ? "is-collapsed" : ""}`}>
       <div className="sidebar__top">
@@ -23,8 +24,6 @@ export default function Sidebar({ collapsed, onToggle, nav, brandTo, profileTo, 
         </button>
       </div>
 
-      {roleLabel && <span className="sidebar__role">{roleLabel}</span>}
-
       <nav className="sidebar__nav" aria-label="Main">
         {nav.map((item) => (
           <NavLink
@@ -34,7 +33,7 @@ export default function Sidebar({ collapsed, onToggle, nav, brandTo, profileTo, 
             title={collapsed ? item.label : undefined}
             className={({ isActive }) => `sidebar__link ${isActive ? "is-active" : ""}`}
           >
-            <span className="sidebar__slot sidebar__icon" aria-hidden="true">{item.icon}</span>
+            <span className="sidebar__slot sidebar__icon" aria-hidden="true"><Icon name={item.icon} /></span>
             <span className="sidebar__label">{item.label}</span>
           </NavLink>
         ))}
@@ -53,7 +52,7 @@ export default function Sidebar({ collapsed, onToggle, nav, brandTo, profileTo, 
         </NavLink>
         <button type="button" className="sidebar__logout" onClick={onLogout} aria-label="Logout">
           <span className="sidebar__logout-text">Logout</span>
-          <span className="sidebar__logout-icon" aria-hidden="true">⎋</span>
+          <span className="sidebar__logout-icon" aria-hidden="true"><Icon name="logout" size={18} /></span>
         </button>
       </div>
     </aside>

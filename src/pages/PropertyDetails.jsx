@@ -12,8 +12,8 @@ import { isSlotTaken, saveBooking } from "../utils/bookings";
 import { formatINR, formatPriceShort } from "../utils/format";
 import { findConsultantById, findPropertyById } from "../utils/lookup";
 import useScrollTop from "../utils/useScrollTop";
-import { BUY_STEPS } from "./BuyList";
 
+const BUY_STEPS = ["Area", "Properties", "Details", "Date", "Time", "Confirm"];
 const STAGE_STEP = { details: 3, date: 4, time: 5 };
 
 export default function PropertyDetails() {
@@ -37,14 +37,14 @@ export default function PropertyDetails() {
     return (
       <div className="narrow">
         <p className="notice">This property could not be found.</p>
-        <Link to="/dashboard/buy" className="btn btn--outline">
-          Back to search
+        <Link to="/dashboard/marketplace" className="btn btn--outline">
+          Back to marketplace
         </Link>
       </div>
     );
   }
 
-  const backToList = `/dashboard/buy?pin=${property.pincode}`;
+  const backToList = `/dashboard/marketplace?pin=${property.pincode}`;
   const short = formatPriceShort(property.price);
   const rooms = (n) => (n === null || n === undefined ? "N/A" : n);
 
@@ -82,7 +82,7 @@ export default function PropertyDetails() {
   return (
     <div className="narrow">
       <Link to={backToList} className="back-link">
-        ‹ Back to properties
+        ‹ Back to marketplace
       </Link>
       <StepIndicator steps={BUY_STEPS} current={visitOpen ? 6 : STAGE_STEP[stage]} />
 
@@ -170,7 +170,7 @@ export default function PropertyDetails() {
               type="button"
               className="btn btn--primary"
               autoFocus
-              onClick={() => navigate("/dashboard/buy")}
+              onClick={() => navigate("/dashboard/marketplace")}
             >
               Okay
             </button>

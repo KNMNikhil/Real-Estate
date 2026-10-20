@@ -7,7 +7,6 @@ import AgentLayout from "./pages/AgentLayout";
 import AgentLogin from "./pages/AgentLogin";
 import AgentProfile from "./pages/AgentProfile";
 import Marketplace from "./pages/Marketplace";
-import BuyList from "./pages/BuyList";
 import Consultants from "./pages/Consultants";
 import DashboardLayout from "./pages/DashboardLayout";
 import Dashboard from "./pages/Dashboard";
@@ -36,15 +35,15 @@ export default function App() {
         }
       >
         <Route index element={<Dashboard />} />
-        <Route path="buy" element={<BuyList />} />
-        <Route path="buy/:propertyId" element={<PropertyDetails />} />
+        <Route path="property/:propertyId" element={<PropertyDetails />} />
+        <Route path="buy" element={<Navigate to="/dashboard/marketplace" replace />} />
         <Route path="sell" element={<SellFlow />} />
         <Route path="profile" element={<Profile />} />
         <Route path="marketplace" element={<Marketplace />} />
         <Route path="activities" element={<Activities />} />
         <Route path="consultants" element={<Consultants />} />
         <Route path="services" element={<Navigate to="/dashboard" replace />} />
-        <Route path="functions/*" element={<Navigate to="/dashboard/buy" replace />} />
+        <Route path="functions/*" element={<Navigate to="/dashboard" replace />} />
       </Route>
 
       <Route path="/agent/login" element={<AgentLogin />} />

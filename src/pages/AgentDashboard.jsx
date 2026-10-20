@@ -60,7 +60,10 @@ export default function AgentDashboard() {
 
   return (
     <div className="dash-home">
-      <h1>Welcome, {agent.name}</h1>
+      <div className="title-row">
+        <h1>Welcome, {agent.name}</h1>
+        <span className="auth-badge">Agent</span>
+      </div>
       <p className="muted">
         {agent.areaName} · PIN {agent.pincode}
       </p>

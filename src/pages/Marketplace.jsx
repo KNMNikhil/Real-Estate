@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import SafeImage from "../components/SafeImage";
 import { formatINR, formatPriceShort } from "../utils/format";
 import { getAllProperties } from "../utils/lookup";
@@ -15,7 +15,8 @@ const PRICES = [
 
 export default function Marketplace() {
   const all = useMemo(() => getAllProperties(), []);
-  const [pin, setPin] = useState("");
+  const [params] = useSearchParams();
+  const [pin, setPin] = useState(() => (params.get("pin") ?? "").replace(/\D/g, "").slice(0, 6));
   const [type, setType] = useState("All");
   const [price, setPrice] = useState("any");
   const [beds, setBeds] = useState("any");
@@ -95,7 +96,7 @@ export default function Marketplace() {
         <ul className="market__grid">
           {list.map((p) => (
             <li key={p.id}>
-              <Link to={`/dashboard/buy/${p.id}`} className="mcard">
+              <Link to={`/dashboard/property/${p.id}`} className="mcard">
                 <SafeImage className="mcard__img" src={p.images?.[0]} alt={p.name} fallbackText="" />
                 <span className="mcard__type">{p.type}</span>
                 <div className="mcard__body">

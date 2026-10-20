@@ -62,7 +62,7 @@ function Field({ id, label, error, hint, children, wide }) {
   );
 }
 
-export default function PropertyForm({ initial, pinLocked, submitting, onSubmit }) {
+export default function PropertyForm({ initial, pinLocked, submitting, onSubmit, onBack }) {
   const [values, setValues] = useState({
     name: "",
     type: "",
@@ -114,11 +114,13 @@ export default function PropertyForm({ initial, pinLocked, submitting, onSubmit 
 
   return (
     <form className="property-form" onSubmit={handleSubmit} noValidate>
-      <div className="form-grid">
+      <fieldset className="form-section">
+        <legend>{"Basics"}</legend>
+        <p className="muted form-section__sub">Tell buyers what and where it is.</p>
+        <div className="form-grid">
         <Field id="pf-name" label="Property Name" error={shown.name}>
           <input {...props("name")} type="text" autoComplete="off" />
         </Field>
-
         <Field id="pf-type" label="Property Type" error={shown.type}>
           <select {...props("type")}>
             <option value="">Select type</option>
@@ -127,15 +129,12 @@ export default function PropertyForm({ initial, pinLocked, submitting, onSubmit 
             ))}
           </select>
         </Field>
-
         <Field id="pf-address" label="Full Address" error={shown.address} wide>
           <textarea {...props("address")} rows={2} />
         </Field>
-
         <Field id="pf-area" label="Area (Locality)" error={shown.area}>
           <input {...props("area")} type="text" />
         </Field>
-
         <Field
           id="pf-pincode"
           label="PIN Code"
@@ -150,11 +149,16 @@ export default function PropertyForm({ initial, pinLocked, submitting, onSubmit 
             inputMode="numeric"
           />
         </Field>
+        </div>
+      </fieldset>
 
+      <fieldset className="form-section">
+        <legend>{"Specifications"}</legend>
+        <p className="muted form-section__sub">Size and layout.</p>
+        <div className="form-grid">
         <Field id="pf-sqft" label="Total Area (sq. ft.)" error={shown.sqft}>
           <input {...props("sqft")} type="number" inputMode="numeric" min="1" />
         </Field>
-
         <Field id="pf-facing" label="Facing" error={shown.facing}>
           <select {...props("facing")}>
             <option value="">Select facing</option>
@@ -163,7 +167,6 @@ export default function PropertyForm({ initial, pinLocked, submitting, onSubmit 
             ))}
           </select>
         </Field>
-
         <Field
           id="pf-bedrooms"
           label="Number of Bedrooms"
@@ -179,7 +182,6 @@ export default function PropertyForm({ initial, pinLocked, submitting, onSubmit 
             value={isPlot ? "" : values.bedrooms}
           />
         </Field>
-
         <Field id="pf-bathrooms" label="Number of Bathrooms" error={shown.bathrooms}>
           <input
             {...props("bathrooms")}
@@ -190,7 +192,6 @@ export default function PropertyForm({ initial, pinLocked, submitting, onSubmit 
             value={isPlot ? "" : values.bathrooms}
           />
         </Field>
-
         <Field id="pf-floor" label="Floor" error={shown.floor} hint="e.g. 4, Ground, G+1">
           <input
             {...props("floor")}
@@ -199,7 +200,6 @@ export default function PropertyForm({ initial, pinLocked, submitting, onSubmit 
             value={isPlot ? "" : values.floor}
           />
         </Field>
-
         <Field id="pf-totalFloors" label="Total Floors" error={shown.totalFloors}>
           <input
             {...props("totalFloors")}
@@ -210,25 +210,39 @@ export default function PropertyForm({ initial, pinLocked, submitting, onSubmit 
             value={isPlot ? "" : values.totalFloors}
           />
         </Field>
+        </div>
+      </fieldset>
 
+      <fieldset className="form-section">
+        <legend>{"Price and description"}</legend>
+        <p className="muted form-section__sub">What you expect and why it stands out.</p>
+        <div className="form-grid">
         <Field id="pf-price" label="Expected Price (₹)" error={shown.price}>
           <input {...props("price")} type="number" inputMode="numeric" min="1" />
         </Field>
-
         <Field id="pf-description" label="Description" error={shown.description} wide>
           <textarea {...props("description")} rows={3} />
         </Field>
+        </div>
+      </fieldset>
 
+      <fieldset className="form-section">
+        <legend>{"Owner"}</legend>
+        <p className="muted form-section__sub">Who should we contact?</p>
+        <div className="form-grid">
         <Field id="pf-ownerName" label="Owner Name" error={shown.ownerName}>
           <input {...props("ownerName")} type="text" />
         </Field>
-
         <Field id="pf-ownerContact" label="Owner Contact Number" error={shown.ownerContact}>
           <input {...props("ownerContact")} type="tel" inputMode="numeric" maxLength={10} />
         </Field>
-      </div>
+        </div>
+      </fieldset>
 
-      <MediaUploader items={media} onChange={setMedia} />
+      <fieldset className="form-section">
+        <legend>Photos and videos</legend>
+        <MediaUploader items={media} onChange={setMedia} />
+      </fieldset>
 
       {submitted && Object.keys(errors).length > 0 && (
         <p className="field__error" role="alert">
@@ -236,9 +250,12 @@ export default function PropertyForm({ initial, pinLocked, submitting, onSubmit 
         </p>
       )}
 
-      <div className="actions actions--end">
+      <div className="actions form-actions">
+        <button type="button" className="btn btn--ghost" onClick={onBack}>
+          Back
+        </button>
         <button type="submit" className="btn btn--primary" disabled={submitting}>
-          {submitting ? "Submitting…" : "Submit"}
+          {submitting ? "Submitting…" : "List my property"}
         </button>
       </div>
     </form>
