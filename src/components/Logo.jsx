@@ -4,7 +4,7 @@ export default function Logo({ variant = "mark", size = 44 }) {
   return (
     <img
       className={`logo ${full ? "logo--full" : ""}`}
-      src={full ? "/logo-full.png" : "/logo-mark.png"}
+      src={full ? "/logo-full.png" : "/logo-mark-clear.png"}
       alt="Living Gods Real Estates logo"
       width={full ? undefined : size}
     />

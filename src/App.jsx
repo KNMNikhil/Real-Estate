@@ -10,7 +10,6 @@ import NotFound from "./pages/NotFound";
 import Otp from "./pages/Otp";
 import PropertyDetails from "./pages/PropertyDetails";
 import SellFlow from "./pages/SellFlow";
-import Services from "./pages/Services";
 
 export default function App() {
   return (
@@ -29,7 +28,7 @@ export default function App() {
       >
         <Route index element={<Navigate to="consultants" replace />} />
         <Route path="consultants" element={<Consultants />} />
-        <Route path="services" element={<Services />} />
+        <Route path="services" element={<Navigate to="/dashboard/consultants" replace />} />
         <Route path="functions" element={<Outlet />}>
           <Route index element={<Functions />} />
           <Route path="sell" element={<SellFlow />} />

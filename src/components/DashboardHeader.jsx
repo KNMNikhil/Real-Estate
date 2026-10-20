@@ -4,7 +4,6 @@ import ProfileMenu from "./ProfileMenu";
 
 const NAV = [
   { to: "/dashboard/consultants", label: "LG Consultants View" },
-  { to: "/dashboard/services", label: "Services" },
   { to: "/dashboard/functions", label: "Functions" },
 ];
 

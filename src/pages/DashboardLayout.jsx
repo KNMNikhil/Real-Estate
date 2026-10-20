@@ -1,5 +1,6 @@
 import { Outlet } from "react-router-dom";
 import DashboardHeader from "../components/DashboardHeader";
+import Footer from "../components/Footer";
 
 export default function DashboardLayout() {
   return (
@@ -8,9 +9,7 @@ export default function DashboardLayout() {
       <main className="container page">
         <Outlet />
       </main>
-      <footer className="site-footer">
-        <p>Living Gods Real Estates · www.livingarts.in</p>
-      </footer>
+      <Footer />
     </div>
   );
 }
