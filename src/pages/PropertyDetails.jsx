@@ -37,14 +37,14 @@ export default function PropertyDetails() {
     return (
       <div className="narrow">
         <p className="notice">This property could not be found.</p>
-        <Link to="/dashboard/functions/buy" className="btn btn--outline">
+        <Link to="/dashboard/buy" className="btn btn--outline">
           Back to search
         </Link>
       </div>
     );
   }
 
-  const backToList = `/dashboard/functions/buy?pin=${property.pincode}`;
+  const backToList = `/dashboard/buy?pin=${property.pincode}`;
   const short = formatPriceShort(property.price);
   const rooms = (n) => (n === null || n === undefined ? "N/A" : n);
 
@@ -169,7 +169,7 @@ export default function PropertyDetails() {
               type="button"
               className="btn btn--primary"
               autoFocus
-              onClick={() => navigate("/dashboard/functions")}
+              onClick={() => navigate("/dashboard/buy")}
             >
               Okay
             </button>

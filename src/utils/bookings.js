@@ -21,3 +21,9 @@ export function saveBooking(booking) {
   all.push({ ...booking, id: `B${Date.now()}`, createdAt: new Date().toISOString() });
   return writeJSON(KEYS.bookings, all);
 }
+
+// Bookings made by one user, newest first.
+export const getUserBookings = (contact) =>
+  getStoredBookings()
+    .filter((b) => b.userContact === contact)
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));

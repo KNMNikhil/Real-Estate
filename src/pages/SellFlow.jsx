@@ -244,7 +244,7 @@ export default function SellFlow() {
               type="button"
               className="btn btn--primary"
               autoFocus
-              onClick={() => navigate("/dashboard/functions")}
+              onClick={() => navigate("/dashboard/sell")}
             >
               Okay
             </button>

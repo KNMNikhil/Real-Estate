@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { DEMO_OTP } from "../data/dummyData";
+import OtpInput from "../components/OtpInput";
 import AuthLayout from "../components/AuthLayout";
 import { maskedPhone } from "../utils/format";
 
@@ -16,8 +17,8 @@ export default function Otp() {
   if (user) return <Navigate to="/dashboard" replace />;
   if (!pending) return <Navigate to="/login" replace />;
 
-  const handleChange = (e) => {
-    setOtp(e.target.value.replace(/\D/g, "").slice(0, 6));
+  const handleChange = (value) => {
+    setOtp(value.replace(/\D/g, "").slice(0, 6));
     setError("");
     setResent(false);
   };
@@ -50,21 +51,14 @@ export default function Otp() {
 
         <form onSubmit={handleSubmit} noValidate>
           <div className="field">
-            <label htmlFor="otp" className="field__label">
+            <p className="field__label otp-label">
               Enter 6-digit OTP
-            </label>
-            <input
-              id="otp"
-              className={`input input--otp ${error ? "input--error" : ""}`}
-              type="text"
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              maxLength={6}
+            </p>
+            <OtpInput
               value={otp}
               onChange={handleChange}
-              aria-invalid={error ? "true" : "false"}
-              aria-describedby={error ? "otp-error" : "otp-demo"}
-              autoFocus
+              invalid={Boolean(error)}
+              describedBy={error ? "otp-error" : "otp-demo"}
             />
             {error && (
               <p id="otp-error" className="field__error" role="alert">

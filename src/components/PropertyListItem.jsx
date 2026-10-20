@@ -5,7 +5,7 @@ import SafeImage from "./SafeImage";
 export default function PropertyListItem({ property }) {
   return (
     <li>
-      <Link to={`/dashboard/functions/buy/${property.id}`} className="property-item">
+      <Link to={`/dashboard/buy/${property.id}`} className="property-item">
         <SafeImage
           className="property-item__thumb"
           src={property.images?.[0]}
