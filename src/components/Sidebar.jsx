@@ -11,7 +11,7 @@ const NAV = [
 
 const STORE_KEY = "lg_sidebar_collapsed";
 
-export default function Sidebar({ collapsed }) {
+export default function Sidebar({ collapsed, onToggle }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -29,6 +29,18 @@ export default function Sidebar({ collapsed }) {
           </span>
           <span className="sidebar__label">Living Gods</span>
         </Link>
+      </div>
+
+      <div className="sidebar__toggle-row">
+        <button
+          type="button"
+          className="sidebar__toggle"
+          onClick={onToggle}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          aria-expanded={!collapsed}
+        >
+          {collapsed ? "›" : "‹"}
+        </button>
       </div>
 
       <nav className="sidebar__nav" aria-label="Dashboard">
@@ -57,7 +69,7 @@ export default function Sidebar({ collapsed }) {
           </span>
           <span className="sidebar__label">{user?.name}</span>
         </NavLink>
-        <button type="button" className="sidebar__link sidebar__logout" onClick={handleLogout} title={collapsed ? "Logout" : undefined}>
+        <button type="button" className="sidebar__logout" onClick={handleLogout} title={collapsed ? "Logout" : undefined}>
           <span className="sidebar__slot sidebar__icon" aria-hidden="true">⎋</span>
           <span className="sidebar__label">Logout</span>
         </button>

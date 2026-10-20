@@ -1984,7 +1984,7 @@ textarea {
 
 /* ===== Dashboard: sidebar layout ===== */
 .dashboard {
-  --side-w: 250px;
+  --side-w: 220px;
   display: grid;
   grid-template-columns: var(--side-w) 1fr;
   min-height: 100vh;
@@ -1995,7 +1995,7 @@ textarea {
     #fff;
 }
 .dashboard.is-collapsed {
-  --side-w: 76px;
+  --side-w: 68px;
 }
 .dashboard__main {
   display: flex;
@@ -2046,7 +2046,7 @@ textarea {
   position: relative;
   display: flex;
   align-items: center;
-  margin-bottom: 18px;
+  margin-bottom: 8px;
   min-height: 44px;
 }
 .sidebar__brand {
@@ -2064,11 +2064,16 @@ textarea {
 .sidebar__brand .logo {
   mix-blend-mode: normal;
 }
+.sidebar__toggle-row {
+  display: flex;
+  justify-content: flex-end;
+  height: 28px;
+  margin-bottom: 12px;
+}
+.sidebar.is-collapsed .sidebar__toggle-row {
+  justify-content: center;
+}
 .sidebar__toggle {
-  position: fixed;
-  top: 30px;
-  left: calc(var(--side-w) - 14px);
-  z-index: 40;
   width: 28px;
   height: 28px;
   border-radius: 50%;
@@ -2081,8 +2086,8 @@ textarea {
   display: grid;
   place-items: center;
   padding: 0;
-  box-shadow: 0 2px 8px rgba(20, 23, 46, 0.12);
-  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s;
+  box-shadow: 0 1px 4px rgba(20, 23, 46, 0.1);
+  transition: background 0.2s;
 }
 .sidebar__toggle:hover {
   background: #fff4dc;
@@ -2145,8 +2150,30 @@ textarea {
 .sidebar__user .sidebar__label {
   color: inherit;
 }
+.sidebar__logout {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 44px;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid #e3e6ef;
+  background: rgba(255, 255, 255, 0.7);
+  color: #3a3d4f;
+  font: inherit;
+  font-size: 0.95rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
 .sidebar__logout:hover {
-  background: rgba(255, 255, 255, 0.8);
+  background: #fff;
+  border-color: #d5d8e4;
+}
+.sidebar__logout .sidebar__slot {
+  flex-basis: 42px;
+  width: 42px;
 }
 
 /* Dashboard home */
@@ -2249,7 +2276,7 @@ textarea {
   .sidebar__top {
     margin: 0;
   }
-  .sidebar__toggle {
+  .sidebar__toggle-row {
     display: none;
   }
   .sidebar__nav {

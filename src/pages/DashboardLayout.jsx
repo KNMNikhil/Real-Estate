@@ -25,16 +25,7 @@ export default function DashboardLayout() {
 
   return (
     <div className={`dashboard ${collapsed ? "is-collapsed" : ""}`}>
-      <Sidebar collapsed={collapsed} />
-      <button
-        type="button"
-        className="sidebar__toggle"
-        onClick={toggle}
-        aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-        aria-expanded={!collapsed}
-      >
-        {collapsed ? "›" : "‹"}
-      </button>
+      <Sidebar collapsed={collapsed} onToggle={toggle} />
       <div className="dashboard__main">
         <main className="dashboard__content">
           <Outlet />
