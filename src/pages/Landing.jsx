@@ -90,7 +90,7 @@ export default function Landing() {
             </h2>
             <div className="about__body">
               <p className="about__lead">
-                Highly transparent, no words, no intricate literature, only work and service.
+                Highly transparent, no words, no enticing literature, only work and service.
               </p>
               <p>
                 We believe in the maxim, &lsquo;Action speaks louder than words.&rsquo; Our deeds
