@@ -9,6 +9,7 @@ export default function PublicLayout() {
   const { pathname, hash, key } = useLocation();
   const [atHero, setAtHero] = useState(true);
   const [inAbout, setInAbout] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   // Home is highlighted only while the hero is on screen; scrolling down turns it off.
   useEffect(() => {
@@ -38,6 +39,7 @@ export default function PublicLayout() {
   useEffect(() => {
     if (hash) document.getElementById(hash.slice(1))?.scrollIntoView();
     else window.scrollTo(0, 0);
+    setMenuOpen(false);
   }, [pathname, hash, key]);
 
   return (
@@ -67,7 +69,28 @@ export default function PublicLayout() {
           <button type="button" className="btn btn--gold btn--pill" onClick={() => navigate("/marketplace")}>
             Marketplace
           </button>
+          <button
+            type="button"
+            className="landing__burger"
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
+            onClick={() => setMenuOpen((o) => !o)}
+          >
+            <span aria-hidden="true" />
+          </button>
         </div>
+
+        <ul id="mobile-menu" className={`landing__menu ${menuOpen ? "is-open" : ""}`}>
+          <li>
+            <Link to="/" onClick={goHome}>Home</Link>
+          </li>
+          <li><Link to="/#about">About us</Link></li>
+          <li><Link to="/marketplace">Buy</Link></li>
+          <li><Link to="/sell">Sell</Link></li>
+          <li><Link to="/marketplace">All properties</Link></li>
+          <li><Link to="/contact">Contact us</Link></li>
+        </ul>
       </nav>
       <Outlet />
       <Footer />
