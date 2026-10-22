@@ -22,7 +22,7 @@ export default function Footer() {
           <Link to="/sell">Sell</Link>
           <Link to="/about">About us</Link>
           <Link to="/contact">Contact us</Link>
-          <Link to="/agent/login">Agent login</Link>
+          <Link to="/consultant/login">Consultant login</Link>
         </nav>
       </div>
       <ul className="site-footer__contact" id="contact" aria-label="Contact information">

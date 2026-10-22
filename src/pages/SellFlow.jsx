@@ -15,17 +15,17 @@ import { formatLongDate, formatTime } from "../utils/dates";
 import { findConsultantByPin } from "../utils/lookup";
 import useScrollTop from "../utils/useScrollTop";
 
-const STEPS = ["Your details", "Area", "Agent", "Date", "Time", "Agreement", "Property"];
+const STEPS = ["Your details", "Area", "Consultant", "Date", "Time", "Agreement", "Property"];
 const SAMPLE_PINS = ["600089", "600001", "600020", "600041"];
 const DOCS = ["Sale deed or title document", "Encumbrance certificate", "Latest property tax receipt", "Your photo ID"];
 
 const TIPS = {
-  1: ["Why we ask", ["No account is needed.", "Your agent uses these details to confirm your meeting.", "We never share them outside Living Gods."]],
-  2: ["Why your PIN?", ["Each area has its own dedicated agent.", "Your agent knows local prices and buyers.", "Enter the PIN where the property is located."]],
-  3: ["What your agent does", ["Visits and verifies your property.", "Helps you set a fair price.", "Handles buyer visits and paperwork with you."]],
+  1: ["Why we ask", ["No account is needed.", "Your consultant uses these details to confirm your meeting.", "We never share them outside Living Gods."]],
+  2: ["Why your PIN?", ["Each area has its own dedicated consultant.", "Your consultant knows local prices and buyers.", "Enter the PIN where the property is located."]],
+  3: ["What your consultant does", ["Visits and verifies your property.", "Helps you set a fair price.", "Handles buyer visits and paperwork with you."]],
   4: ["Choosing a date", ["Bookings open from tomorrow.", "Pick a day when you or a representative can be at the property.", "Use the arrows to see later months."]],
   5: ["Choosing a time", ["Slots are 30 minutes apart.", "Greyed-out slots are already booked.", "Morning slots usually have the best light for photos."]],
-  6: ["About the agreement", ["It sets out how we list and promote your property.", "Read it fully before you accept.", "Your agent can explain any clause."]],
+  6: ["About the agreement", ["It sets out how we list and promote your property.", "Read it fully before you accept.", "Your consultant can explain any clause."]],
   7: ["Tips for a great listing", ["Add clear, well-lit photos of every room.", "Use the real built-up area and expected price.", "A detailed description gets more visits."]],
 };
 
@@ -117,7 +117,7 @@ export default function SellFlow() {
       <header className="sell__head">
         <span className="lp-eyebrow">Sell a property</span>
         <h1>List your property with us</h1>
-        <p className="muted">No account needed. Meet your area agent, sign the agreement and list your property in a few easy steps.</p>
+        <p className="muted">No account needed. Meet your area consultant, sign the agreement and list your property in a few easy steps.</p>
       </header>
       <StepIndicator steps={STEPS} current={step} />
 
@@ -141,10 +141,10 @@ export default function SellFlow() {
             <section className="card step-card sell-card">
               <span className="sell-card__icon" aria-hidden="true">⌖</span>
               <h2>Where is your property?</h2>
-              <p className="muted">We will connect you with the agent who covers that area.</p>
+              <p className="muted">We will connect you with the consultant who covers that area.</p>
               <PinForm
                 label="Area PIN code"
-                buttonLabel="Find agent"
+                buttonLabel="Find consultant"
                 initialValue={pin}
                 onChange={() => setNoConsultant(false)}
                 onSubmit={handlePin}
@@ -169,7 +169,7 @@ export default function SellFlow() {
 
           {step === 3 && consultant && (
             <>
-              <ConsultantCard consultant={consultant} title="Your area agent" />
+              <ConsultantCard consultant={consultant} title="Your area consultant" />
               <div className="actions">
                 <button type="button" className="btn btn--ghost" onClick={() => setStep(2)}>
                   Change PIN

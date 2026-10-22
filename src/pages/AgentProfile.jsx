@@ -6,7 +6,7 @@ export default function AgentProfile() {
   const navigate = useNavigate();
   const rows = [
     ["Name", agent.name],
-    ["Agent ID", agent.id],
+    ["Consultant ID", agent.id],
     ["Area", agent.areaName],
     ["PIN code", agent.pincode],
     ["Contact number", agent.contact],

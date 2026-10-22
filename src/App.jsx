@@ -25,9 +25,9 @@ export default function App() {
         <Route path="/sell" element={<SellFlow />} />
       </Route>
 
-      <Route path="/agent/login" element={<AgentLogin />} />
+      <Route path="/consultant/login" element={<AgentLogin />} />
       <Route
-        path="/agent"
+        path="/consultant"
         element={
           <ProtectedRoute>
             <AgentLayout />
@@ -40,6 +40,8 @@ export default function App() {
       </Route>
 
       {/* Customer accounts no longer exist; send old links to the marketplace. */}
+      <Route path="/agent/login" element={<Navigate to="/consultant/login" replace />} />
+      <Route path="/agent/*" element={<Navigate to="/consultant" replace />} />
       <Route path="/login" element={<Navigate to="/marketplace" replace />} />
       <Route path="/signup" element={<Navigate to="/marketplace" replace />} />
       <Route path="/otp" element={<Navigate to="/marketplace" replace />} />

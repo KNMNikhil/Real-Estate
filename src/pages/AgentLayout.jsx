@@ -3,8 +3,8 @@ import AppShell from "../components/AppShell";
 import { useAuth } from "../context/AuthContext";
 
 const NAV = [
-  { to: "/agent", label: "Dashboard", icon: "dashboard", end: true },
-  { to: "/agent/calendar", label: "Calendar", icon: "calendar" },
+  { to: "/consultant", label: "Dashboard", icon: "dashboard", end: true },
+  { to: "/consultant/calendar", label: "Calendar", icon: "calendar" },
 ];
 
 export default function AgentLayout() {
@@ -13,8 +13,8 @@ export default function AgentLayout() {
   return (
     <AppShell
       nav={NAV}
-      brandTo="/agent"
-      profileTo="/agent/profile"
+      brandTo="/consultant"
+      profileTo="/consultant/profile"
       name={agent?.name}
       onLogout={() => {
         logoutAgent();

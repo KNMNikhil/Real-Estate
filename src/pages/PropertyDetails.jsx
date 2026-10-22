@@ -138,7 +138,7 @@ export default function PropertyDetails() {
         <section className="card step-card" aria-labelledby="info-title">
           <h2 id="info-title">Your details</h2>
           <p className="muted">
-            We share these with your agent, {consultant.name}, so they can confirm your visit. No account is needed.
+            We share these with your consultant, {consultant.name}, so they can confirm your visit. No account is needed.
           </p>
           <ContactForm
             initial={contact ?? {}}

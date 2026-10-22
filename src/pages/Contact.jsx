@@ -72,7 +72,7 @@ export default function Contact() {
         <span className="lp-eyebrow">Contact us</span>
         <h1>Get in touch with us today</h1>
         <p>
-          For honest guidance on buying, selling or managing property, talk to our team. Your area agent will
+          For honest guidance on buying, selling or managing property, talk to our team. Your area consultant will
           get back to you personally.
         </p>
         <p>

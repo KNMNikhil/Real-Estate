@@ -13,7 +13,7 @@ export default function AgentLogin() {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
-  if (agent) return <Navigate to="/agent" replace />;
+  if (agent) return <Navigate to="/consultant" replace />;
 
   const submit = async (e) => {
     e.preventDefault();
@@ -29,7 +29,7 @@ export default function AgentLogin() {
         return;
       }
       loginAgent(session);
-      navigate("/agent", { replace: true });
+      navigate("/consultant", { replace: true });
     } catch (e2) {
       setError(
         e2.unavailable
@@ -43,8 +43,8 @@ export default function AgentLogin() {
 
   return (
     <AuthLayout>
-      <span className="auth-badge">Agent portal</span>
-      <h1>Agent login</h1>
+      <span className="auth-badge">Consultant portal</span>
+      <h1>Consultant login</h1>
       <p className="auth-split__sub">Sign in with your registered contact number and password.</p>
 
       <form onSubmit={submit} noValidate>
