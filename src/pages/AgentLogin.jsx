@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import AuthLayout from "../components/AuthLayout";
+import Icon from "../components/Icon";
 import { useAuth } from "../context/AuthContext";
 import { agentLogin } from "../lib/api";
 import { validateContact } from "../utils/validators";
@@ -12,6 +13,7 @@ export default function AgentLogin() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [showPw, setShowPw] = useState(false);
 
   if (agent) return <Navigate to="/consultant" replace />;
 
@@ -67,18 +69,29 @@ export default function AgentLogin() {
         </div>
         <div className="field">
           <label htmlFor="agent-password" className="field__label">Password</label>
-          <input
-            id="agent-password"
-            className={`input ${error ? "input--error" : ""}`}
-            type="password"
-            autoComplete="current-password"
-            placeholder="Enter your password"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              setError("");
-            }}
-          />
+          <div className="pw-field">
+            <input
+              id="agent-password"
+              className={`input ${error ? "input--error" : ""}`}
+              type={showPw ? "text" : "password"}
+              autoComplete="current-password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setError("");
+              }}
+            />
+            <button
+              type="button"
+              className="pw-field__toggle"
+              onClick={() => setShowPw((v) => !v)}
+              aria-label={showPw ? "Hide password" : "Show password"}
+              aria-pressed={showPw}
+            >
+              <Icon name={showPw ? "eyeOff" : "eye"} size={20} />
+            </button>
+          </div>
           {error && <p className="field__error" role="alert">{error}</p>}
         </div>
         <button type="submit" className="btn btn--metal btn--block" disabled={busy}>

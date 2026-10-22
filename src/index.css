@@ -4021,3 +4021,29 @@ a.contact__value:hover {
 .about__quote mark {
   background: none;
 }
+
+.pw-field {
+  position: relative;
+}
+.pw-field .input {
+  padding-right: 48px;
+}
+.pw-field__toggle {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #6f7384;
+  cursor: pointer;
+}
+.pw-field__toggle:hover {
+  background: #fff4dc;
+  color: #14161f;
+}

@@ -24,7 +24,7 @@ const toProperty = (r) => ({
   address: r.address,
   description: r.description,
   images: r.images ?? [],
-  consultantId: r.agent_id,
+  consultantId: r.consultant_id,
   uploadedAt: r.created_at,
 });
 
@@ -43,7 +43,7 @@ export async function fetchListings() {
 // Times already taken for an agent on a date.
 export async function fetchBookedTimes(consultantId, date) {
   try {
-    return await rpc("booked_times", { p_agent: consultantId, p_date: date });
+    return await rpc("booked_times", { p_consultant: consultantId, p_date: date });
   } catch (e) {
     if (e instanceof DbError && e.unavailable) return getLocalBookedTimes(consultantId, date);
     throw e;
@@ -55,7 +55,7 @@ export async function fetchBookedTimes(consultantId, date) {
 export async function bookAppointment({ consultantId, kind, date, time, contact, property, propertyId, propertyName }) {
   try {
     await rpc("book_appointment", {
-      p_agent: consultantId,
+      p_consultant: consultantId,
       p_kind: kind,
       p_date: date,
       p_time: time,
@@ -128,14 +128,14 @@ export async function sendContactMessage(m) {
 
 // ---- agent ----------------------------------------------------------------
 export async function agentLogin(contact, password) {
-  const res = await rpc("agent_login", { p_contact: contact, p_password: password });
-  return res; // { token, agent } or null
+  const res = await rpc("consultant_login", { p_contact: contact, p_password: password });
+  return res ? { token: res.token, agent: res.consultant } : null; // null when details are wrong
 }
 
-export const agentLogout = (token) => rpc("agent_logout", { p_token: token }).catch(() => {});
+export const agentLogout = (token) => rpc("consultant_logout", { p_token: token }).catch(() => {});
 
 export async function agentAppointments(token) {
-  const rows = await rpc("agent_appointments", { p_token: token });
+  const rows = await rpc("consultant_appointments", { p_token: token });
   return rows.map((r) => ({
     id: r.id,
     kind: r.kind,

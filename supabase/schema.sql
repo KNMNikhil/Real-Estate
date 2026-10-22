@@ -10,9 +10,9 @@
 --     `properties` (the marketplace).
 --   * Customers never log in. Booking, listing and contact messages go
 --     through functions that validate the data and store it.
---   * Agents log in with agent_login() and get a session token. Only
---     functions that check that token can read appointments, so one agent
---     can never see another agent's customers.
+--   * Consultants log in with consultant_login() and get a session token. Only
+--     functions that check that token can read appointments, so one consultant
+--     can never see another consultant's customers.
 -- =====================================================================
 
 create extension if not exists pgcrypto with schema extensions;
@@ -21,12 +21,12 @@ create extension if not exists pgcrypto with schema extensions;
 -- Tables
 -- ---------------------------------------------------------------------
 
-create table if not exists public.agents (
+create table if not exists public.consultants (
   id            text primary key,                 -- e.g. 'C001'
   name          text not null,
   pincode       text not null,
   area_name     text not null,
-  contact       text not null unique,             -- agent login id (phone number)
+  contact       text not null unique,             -- consultant login id (phone number)
   email         text,
   address       text,
   photo         text,
@@ -57,14 +57,14 @@ create table if not exists public.properties (
   address            text,
   description        text,
   images             text[] not null default array[]::text[],
-  agent_id           text references public.agents(id),
+  consultant_id           text references public.consultants(id),
   owner_customer_id  uuid references public.customers(id),
   created_at         timestamptz not null default now()
 );
 
 create table if not exists public.appointments (
   id                uuid primary key default gen_random_uuid(),
-  agent_id          text not null references public.agents(id),
+  consultant_id          text not null references public.consultants(id),
   customer_id       uuid not null references public.customers(id),
   kind              text not null check (kind in ('buy', 'sell')),
   property_id       text,
@@ -74,16 +74,16 @@ create table if not exists public.appointments (
   status            text not null default 'upcoming'
                       check (status in ('upcoming', 'completed', 'cancelled')),
   created_at        timestamptz not null default now(),
-  -- an agent can only be booked once for a given date and time
-  unique (agent_id, appointment_date, appointment_time)
+  -- a consultant can only be booked once for a given date and time
+  unique (consultant_id, appointment_date, appointment_time)
 );
 
-create index if not exists appointments_agent_date_idx
-  on public.appointments (agent_id, appointment_date);
+create index if not exists appointments_consultant_date_idx
+  on public.appointments (consultant_id, appointment_date);
 
-create table if not exists public.agent_sessions (
+create table if not exists public.consultant_sessions (
   token       uuid primary key default gen_random_uuid(),
-  agent_id    text not null references public.agents(id) on delete cascade,
+  consultant_id    text not null references public.consultants(id) on delete cascade,
   created_at  timestamptz not null default now(),
   expires_at  timestamptz not null default now() + interval '7 days'
 );
@@ -101,11 +101,11 @@ create table if not exists public.contact_messages (
 -- Row Level Security
 -- ---------------------------------------------------------------------
 
-alter table public.agents            enable row level security;
+alter table public.consultants            enable row level security;
 alter table public.customers         enable row level security;
 alter table public.properties        enable row level security;
 alter table public.appointments      enable row level security;
-alter table public.agent_sessions    enable row level security;
+alter table public.consultant_sessions    enable row level security;
 alter table public.contact_messages  enable row level security;
 
 -- Marketplace listings are public to read. Writes only happen via functions.
@@ -123,26 +123,26 @@ create policy "anyone can send a message" on public.contact_messages
   );
 
 -- (The old agents_public view was removed: the website does not need it and
--- Supabase marks views as "unrestricted". Agent details are returned by
--- agent_login() instead.)
+-- Supabase marks views as "unrestricted". Consultant details are returned by
+-- consultant_login() instead.)
 drop view if exists public.agents_public;
 
 -- ---------------------------------------------------------------------
 -- Functions
 -- ---------------------------------------------------------------------
 
--- Agent sign in: returns a token and the agent details, or null when the details are wrong.
-create or replace function public.agent_login(p_contact text, p_password text)
+-- Consultant sign in: returns a token and the consultant details, or null when the details are wrong.
+create or replace function public.consultant_login(p_contact text, p_password text)
 returns json
 language plpgsql
 security definer
 set search_path = public, extensions
 as $$
 declare
-  a public.agents;
+  a public.consultants;
   t uuid;
 begin
-  select * into a from public.agents where contact = trim(p_contact);
+  select * into a from public.consultants where contact = trim(p_contact);
   if not found then
     return null;
   end if;
@@ -150,12 +150,12 @@ begin
     return null;
   end if;
 
-  delete from public.agent_sessions where expires_at < now();
-  insert into public.agent_sessions (agent_id) values (a.id) returning token into t;
+  delete from public.consultant_sessions where expires_at < now();
+  insert into public.consultant_sessions (consultant_id) values (a.id) returning token into t;
 
   return json_build_object(
     'token', t,
-    'agent', json_build_object(
+    'consultant', json_build_object(
       'id', a.id, 'name', a.name, 'pincode', a.pincode, 'areaName', a.area_name,
       'contact', a.contact, 'email', a.email, 'address', a.address, 'photo', a.photo
     )
@@ -163,31 +163,31 @@ begin
 end;
 $$;
 
-create or replace function public.agent_logout(p_token uuid)
+create or replace function public.consultant_logout(p_token uuid)
 returns void
 language sql
 security definer
 set search_path = public
 as $$
-  delete from public.agent_sessions where token = p_token;
+  delete from public.consultant_sessions where token = p_token;
 $$;
 
--- Internal helper: which agent does this session token belong to?
-create or replace function public.agent_id_from_token(p_token uuid)
+-- Internal helper: which consultant does this session token belong to?
+create or replace function public.consultant_id_from_token(p_token uuid)
 returns text
 language sql
 security definer
 stable
 set search_path = public
 as $$
-  select agent_id from public.agent_sessions
+  select consultant_id from public.consultant_sessions
   where token = p_token and expires_at > now();
 $$;
 
-revoke all on function public.agent_id_from_token(uuid) from public, anon, authenticated;
+revoke all on function public.consultant_id_from_token(uuid) from public, anon, authenticated;
 
--- All appointments for the signed-in agent, with the customer's details.
-create or replace function public.agent_appointments(p_token uuid)
+-- All appointments for the signed-in consultant, with the customer's details.
+create or replace function public.consultant_appointments(p_token uuid)
 returns table (
   id uuid,
   kind text,
@@ -206,10 +206,10 @@ security definer
 set search_path = public
 as $$
 declare
-  v_agent text;
+  v_consultant text;
 begin
-  v_agent := public.agent_id_from_token(p_token);
-  if v_agent is null then
+  v_consultant := public.consultant_id_from_token(p_token);
+  if v_consultant is null then
     raise exception 'invalid or expired session' using errcode = '28000';
   end if;
 
@@ -221,13 +221,13 @@ begin
            c.name, c.email, c.phone, ap.created_at
     from public.appointments ap
     join public.customers c on c.id = ap.customer_id
-    where ap.agent_id = v_agent
+    where ap.consultant_id = v_consultant
     order by ap.appointment_date, ap.appointment_time;
 end;
 $$;
 
--- Times already taken for an agent on a date (no customer data is exposed).
-create or replace function public.booked_times(p_agent text, p_date date)
+-- Times already taken for an consultant on a date (no customer data is exposed).
+create or replace function public.booked_times(p_consultant text, p_date date)
 returns text[]
 language sql
 security definer
@@ -236,16 +236,16 @@ set search_path = public
 as $$
   select coalesce(array_agg(appointment_time order by appointment_time), array[]::text[])
   from public.appointments
-  where agent_id = p_agent
+  where consultant_id = p_consultant
     and appointment_date = p_date
     and status <> 'cancelled';
 $$;
 
 -- Book an appointment. Saves the customer (by phone number), the listing
 -- when selling (p_property), and the appointment, all in one step.
--- Raises 'slot_taken' if the agent is already booked at that time.
+-- Raises 'slot_taken' if the consultant is already booked at that time.
 create or replace function public.book_appointment(
-  p_agent          text,
+  p_consultant          text,
   p_kind           text,
   p_date           date,
   p_time           text,
@@ -265,8 +265,8 @@ declare
   v_customer uuid;
   v_appt     uuid;
 begin
-  if not exists (select 1 from public.agents where id = p_agent) then
-    raise exception 'unknown agent';
+  if not exists (select 1 from public.consultants where id = p_consultant) then
+    raise exception 'unknown consultant';
   end if;
   if p_kind not in ('buy', 'sell') then
     raise exception 'kind must be buy or sell';
@@ -290,7 +290,7 @@ begin
   if p_property is not null then
     insert into public.properties (
       id, name, type, pincode, area, sqft, bedrooms, bathrooms, floor, facing,
-      price, address, description, images, agent_id, owner_customer_id
+      price, address, description, images, consultant_id, owner_customer_id
     ) values (
       p_property->>'id',
       p_property->>'name',
@@ -306,17 +306,17 @@ begin
       p_property->>'address',
       p_property->>'description',
       coalesce(array(select jsonb_array_elements_text(p_property->'images')), array[]::text[]),
-      p_agent,
+      p_consultant,
       v_customer
     );
   end if;
 
   begin
     insert into public.appointments (
-      agent_id, customer_id, kind, property_id, property_name,
+      consultant_id, customer_id, kind, property_id, property_name,
       appointment_date, appointment_time
     ) values (
-      p_agent, v_customer, p_kind,
+      p_consultant, v_customer, p_kind,
       coalesce(p_property_id, p_property->>'id'),
       coalesce(p_property_name, p_property->>'name'),
       p_date, p_time
@@ -330,24 +330,24 @@ begin
 end;
 $$;
 
-grant execute on function public.agent_login(text, text)            to anon, authenticated;
-grant execute on function public.agent_logout(uuid)                 to anon, authenticated;
-grant execute on function public.agent_appointments(uuid)           to anon, authenticated;
+grant execute on function public.consultant_login(text, text)            to anon, authenticated;
+grant execute on function public.consultant_logout(uuid)                 to anon, authenticated;
+grant execute on function public.consultant_appointments(uuid)           to anon, authenticated;
 grant execute on function public.booked_times(text, date)           to anon, authenticated;
 grant execute on function public.book_appointment(
   text, text, date, text, text, text, text, text, text, jsonb)      to anon, authenticated;
 
 -- ---------------------------------------------------------------------
--- Demo data: 4 agents. Agent login = the contact number below.
+-- Demo data: 4 consultants. Consultant login = the contact number below.
 -- Starting passwords follow the pattern  Agent@<pincode>  (e.g. the
--- Nandambakkam agent uses the pincode 600089). CHANGE THEM before going
+-- Nandambakkam consultant uses the pincode 600089). CHANGE THEM before going
 -- live with:
---   update public.agents
+--   update public.consultants
 --      set password_hash = extensions.crypt('a-new-strong-password', extensions.gen_salt('bf'))
 --    where id = 'C001';
 -- ---------------------------------------------------------------------
 
-insert into public.agents (id, name, pincode, area_name, contact, email, address, photo, password_hash)
+insert into public.consultants (id, name, pincode, area_name, contact, email, address, photo, password_hash)
 values
   ('C001', 'Arun Prakash',    '600089', 'Nandambakkam',        '9840012345', 'arun.prakash@livinggods.in',
    'No. 12, 3rd Cross Street, Nandambakkam, Chennai - 600089', 'https://i.pravatar.cc/300?img=12',
@@ -370,7 +370,7 @@ on conflict (id) do nothing;
 
 insert into public.properties (
   id, name, type, pincode, area, sqft, bedrooms, bathrooms, floor, facing,
-  price, address, description, images, agent_id, created_at
+  price, address, description, images, consultant_id, created_at
 ) values
   ('P001', 'Green Valley Apartments', 'Apartment', '600089', 'Nandambakkam', 1450, 3, 2, '4th of 7', 'East', 8500000, 'Plot 45, Ring Road, Nandambakkam, Chennai - 600089', 'Spacious 3BHK with cross ventilation, covered parking and a children''s play area.', array['/properties/5.jpg', '/properties/6.jpg']::text[], 'C001', '2026-10-15T10:30:00'),
   ('P002', 'Sunrise Villa', 'Villa', '600089', 'Nandambakkam', 2200, 4, 3, 'Ground + 1', 'North', 14500000, '12, Temple Street, Nandambakkam, Chennai - 600089', 'Independent villa with private garden and terrace.', array['/properties/10.jpg', '/properties/1.jpg']::text[], 'C001', '2026-09-20T09:00:00'),
