@@ -3907,3 +3907,45 @@ a.contact__value:hover {
   bottom: -56px;
   color: rgba(255, 255, 255, 0.5);
 }
+
+.about__maxim {
+  font-size: 1.22em;
+  font-weight: 700 !important;
+  color: #14161f;
+}
+.lp--top .lp-section:first-child {
+  padding-top: 90px;
+}
+
+.about__maxim-block {
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+  margin: 6px 0 8px;
+}
+.about__maxim-block p {
+  margin: 0;
+}
+.about__intro {
+  font-size: 1.05rem;
+  color: #5a5f70;
+}
+.about__quote {
+  margin: 4px 0;
+  padding: 0;
+  font-size: clamp(1.5rem, 3.4vw, 2.3rem);
+  font-weight: 700 !important;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: #14161f;
+}
+.about__outro {
+  font-size: 1.05rem;
+  color: #5a5f70;
+}
+.ptypes__rail {
+  padding-bottom: 36px;
+}
+.ptypes {
+  padding-bottom: 24px;
+}

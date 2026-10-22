@@ -1,7 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicLayout from "./components/PublicLayout";
-import About from "./pages/About";
 import AgentCalendar from "./pages/AgentCalendar";
 import AgentDashboard from "./pages/AgentDashboard";
 import AgentLayout from "./pages/AgentLayout";
@@ -19,7 +18,7 @@ export default function App() {
     <Routes>
       <Route element={<PublicLayout />}>
         <Route path="/" element={<Landing />} />
-        <Route path="/about" element={<About />} />
+        <Route path="/about" element={<Navigate to="/#about" replace />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/marketplace" element={<Marketplace />} />
         <Route path="/property/:propertyId" element={<PropertyDetails />} />

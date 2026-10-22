@@ -72,12 +72,6 @@ export default function PropertyTypes() {
           )}
         </div>
 
-        {!noScroll && (
-          <div className="ptypes__dots" aria-hidden="true">
-            <span className={edge.start ? "is-on" : ""} />
-            <span className={edge.end ? "is-on" : ""} />
-          </div>
-        )}
       </div>
     </section>
   );
