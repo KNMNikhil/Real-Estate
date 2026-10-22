@@ -15,7 +15,7 @@ export function getBookedTimes(consultantId, date) {
 export const isSlotTaken = (consultantId, date, time) =>
   getBookedTimes(consultantId, date).includes(time);
 
-// booking: { consultantId, date, time, kind: "sell" | "buy", propertyId, userContact }
+// booking: { consultantId, date, time, kind: "sell" | "buy", propertyId, userContact, userName, userEmail }
 export function saveBooking(booking) {
   const all = getStoredBookings();
   all.push({ ...booking, id: `B${Date.now()}`, createdAt: new Date().toISOString() });

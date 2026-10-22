@@ -60,3 +60,10 @@ export function validateRequired(value, label, minLength = 1) {
   if (text.length < minLength) return `${cap(label)} must be at least ${minLength} characters.`;
   return "";
 }
+
+export function validateEmail(value) {
+  const text = String(value ?? "").trim();
+  if (!text) return "Please enter your email address.";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(text)) return "Please enter a valid email address.";
+  return "";
+}

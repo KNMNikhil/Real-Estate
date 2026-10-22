@@ -1,10 +1,8 @@
 import { useState } from "react";
 import {
-  validateContact,
   validateCount,
   validatePositiveNumber,
   validateRequired,
-  validateName,
 } from "../utils/validators";
 import MediaUploader from "./MediaUploader";
 
@@ -40,8 +38,6 @@ function validate(v) {
   e.facing = v.facing ? "" : "Please select the facing direction.";
   e.price = validatePositiveNumber(v.price, "the expected price");
   e.description = validateRequired(v.description, "a description", 10);
-  e.ownerName = validateName(v.ownerName);
-  e.ownerContact = validateContact(v.ownerContact);
   return Object.fromEntries(Object.entries(e).filter(([, msg]) => msg));
 }
 
@@ -77,8 +73,6 @@ export default function PropertyForm({ initial, pinLocked, submitting, onSubmit,
     facing: "",
     price: "",
     description: "",
-    ownerName: "",
-    ownerContact: "",
     ...initial,
   });
   const [media, setMedia] = useState([]);
@@ -222,19 +216,6 @@ export default function PropertyForm({ initial, pinLocked, submitting, onSubmit,
         </Field>
         <Field id="pf-description" label="Description" error={shown.description} wide>
           <textarea {...props("description")} rows={3} />
-        </Field>
-        </div>
-      </fieldset>
-
-      <fieldset className="form-section">
-        <legend>{"Owner"}</legend>
-        <p className="muted form-section__sub">Who should we contact?</p>
-        <div className="form-grid">
-        <Field id="pf-ownerName" label="Owner Name" error={shown.ownerName}>
-          <input {...props("ownerName")} type="text" />
-        </Field>
-        <Field id="pf-ownerContact" label="Owner Contact Number" error={shown.ownerContact}>
-          <input {...props("ownerContact")} type="tel" inputMode="numeric" maxLength={10} />
         </Field>
         </div>
       </fieldset>

@@ -1,3 +1,6 @@
+// Local sample photos in /public/properties (10 files), picked by a stable hash of the seed.
+const img = (seed) => `/properties/${(Array.from(seed).reduce((h, c) => h + c.charCodeAt(0), 0) % 10) + 1}.jpg`;
+
 export const demoUser = {
   name: "Ravi Kumar",
   age: 34,
@@ -61,8 +64,8 @@ export const properties = [
     address: "Plot 45, Ring Road, Nandambakkam, Chennai - 600089",
     description: "Spacious 3BHK with cross ventilation, covered parking and a children's play area.",
     images: [
-      "https://picsum.photos/seed/p001a/800/500",
-      "https://picsum.photos/seed/p001b/800/500",
+      img("p001a"),
+      img("p001b"),
     ],
     consultantId: "C001",
     uploadedAt: "2026-10-15T10:30:00",
@@ -99,7 +102,7 @@ export const properties = [
     price: 6200000,
     address: "10, Mint Street, Parrys, Chennai - 600001",
     description: "Well-maintained 2BHK near the metro station.",
-    images: ["https://picsum.photos/seed/p003a/800/500"],
+    images: [img("p003a")],
     consultantId: "C002",
     uploadedAt: "2026-10-18T14:20:00",
   },
@@ -117,7 +120,7 @@ export const properties = [
     price: 22000000,
     address: "Survey No. 88, Adyar, Chennai - 600020",
     description: "DTCP approved residential plot near the river.",
-    images: ["https://picsum.photos/seed/p004a/800/500"],
+    images: [img("p004a")],
     consultantId: "C003",
     uploadedAt: "2026-10-10T11:00:00",
   },
@@ -136,9 +139,9 @@ export const properties = [
     address: "5, Palm Grove Road, Thiruvanmiyur, Chennai - 600041",
     description: "Newly renovated independent house with terrace garden.",
     images: [
-      "https://picsum.photos/seed/p005a/800/500",
-      "https://picsum.photos/seed/p005b/800/500",
-      "https://picsum.photos/seed/p005c/800/500",
+      img("p005a"),
+      img("p005b"),
+      img("p005c"),
     ],
     consultantId: "C004",
     uploadedAt: "2026-10-17T16:45:00",
@@ -146,7 +149,6 @@ export const properties = [
 ];
 
 
-const img = (seed) => `https://picsum.photos/seed/${seed}/800/500`;
 
 // More projects so the marketplace has something to browse. Pincodes match the consultants above.
 export const moreProperties = [

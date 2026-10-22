@@ -1,72 +1,51 @@
-import { useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import Footer from "../components/Footer";
-import Logo from "../components/Logo";
+import { Link, useNavigate } from "react-router-dom";
+import PropertyCard from "../components/PropertyCard";
+import { getAllProperties } from "../utils/lookup";
 
 const SERVICE_INFO = [
-  { title: "Buying of Property", text: "Browse verified properties in your area and book a visit with your consultant.", icon: "⌂" },
-  { title: "Selling of Property", text: "Meet your area consultant and list your property with complete transparency.", icon: "₹" },
-  { title: "Property Management", text: "Collection of rent out and building maintenance, handled for you.", icon: "⚙" },
-  { title: "Layout Approval", text: "Guidance and support through layout approvals from start to finish.", icon: "✓" },
-  { title: "Plots Promotions", text: "Reach genuine buyers with focused promotion of your plots.", icon: "◈" },
+  { title: "Buying of Property", text: "Browse verified properties in your area and book a visit with your consultant.", image: "/services/buy.jpg", cta: { to: "/marketplace", label: "Buy a property" } },
+  { title: "Selling of Property", text: "Meet your area consultant and list your property with complete transparency.", image: "/services/sell.jpg", cta: { to: "/sell", label: "Sell a property" } },
+  { title: "Property Management", text: "Collection of rent out and building maintenance, handled for you.", image: "/services/manage.jpg" },
+  { title: "Layout Approval", text: "Guidance and support through layout approvals from start to finish.", image: "/services/layout.jpg" },
+  { title: "Plots Promotions", text: "Reach genuine buyers with focused promotion of your plots.", image: "/services/plots.jpg" },
 ];
 
 const TESTIMONIALS = [
   {
     name: "Ravi Kumar",
+    photo: "https://i.pravatar.cc/120?img=8",
     role: "Property buyer, Chennai",
     text: "Everything was explained clearly and there were no hidden surprises. My consultant stayed with me until the visit was done.",
   },
   {
     name: "Meena Lakshmi",
+    photo: "https://i.pravatar.cc/120?img=47",
     role: "Property seller, Parrys",
     text: "Listing my property was simple. I met my area consultant, shared the details, and the process was respectful and quick.",
   },
   {
     name: "Suresh Babu",
+    photo: "https://i.pravatar.cc/120?img=15",
     role: "Landlord, Adyar",
     text: "Rent collection and building maintenance are handled for me now. I finally have peace of mind.",
   },
 ];
 
 const FAQS = [
-  { q: "How do I get started?", a: "Click Get started, log in with your mobile number and OTP, then choose whether you want to buy or sell a property." },
+  { q: "How do I get started?", a: "No account needed. Open the Marketplace to buy a property, or use Sell a property from the Services section. We only ask for your name, email and phone number when you book." },
   { q: "Who are the Living Gods Consultants?", a: "Consultants associated with spiritual organizations that focus on the divine jyoti. Each serves a specific area and is your point of contact." },
-  { q: "How do I book a property visit?", a: "Open a property from the Buy list, pick a date and time slot, and confirm. Your consultant will meet you there." },
-  { q: "Can I sell my property through you?", a: "Yes. Choose Selling a Property, meet your area consultant and share your property details and photos." },
+  { q: "How do I book a property visit?", a: "Open a property from the Marketplace, pick a date and time slot, and confirm. Your consultant will meet you there." },
+  { q: "Can I sell my property through you?", a: "Yes. Choose Sell a property under Services, meet your area consultant and share your property details and photos." },
   { q: "Do you help with layout approvals and plot promotions?", a: "Yes. We guide you through layout approvals and promote plots to genuine buyers." },
 ];
 
 export default function Landing() {
   const navigate = useNavigate();
-  const { hash } = useLocation();
-
-  useEffect(() => {
-    if (!hash) return;
-    document.getElementById(hash.slice(1))?.scrollIntoView();
-  }, [hash]);
+  const all = getAllProperties().sort((x, y) => new Date(y.uploadedAt) - new Date(x.uploadedAt));
+  const featured = all.slice(0, 10);
 
   return (
-    <div className="landing">
-      <nav className="landing__nav" aria-label="Main">
-        <a className="landing__brand" href="#top" aria-label="Living Gods Real Estates home">
-          <Logo size={30} />
-          <span className="landing__brand-name">Living Gods</span>
-        </a>
-        <ul className="landing__links">
-          <li><a href="#about">About</a></li>
-          <li><a href="#services">Services</a></li>
-          <li><a href="#consultants">Consultants</a></li>
-          <li><a href="#faq">FAQ</a></li>
-        </ul>
-        <div className="landing__actions">
-          <Link to="/login" className="landing__login">Login</Link>
-          <button type="button" className="btn btn--gold btn--pill" onClick={() => navigate("/signup")}>
-            Get started
-          </button>
-        </div>
-      </nav>
-
+    <>
       <header className="hero" id="top">
         <div className="hero__text">
           <h1>Living Gods Real Estates</h1>
@@ -75,6 +54,9 @@ export default function Landing() {
             Highly transparent real estate service. Buy, sell and manage property with consultants
             you can trust.
           </p>
+          <button type="button" className="btn btn--gold btn--pill btn--hero" onClick={() => navigate("/marketplace")}>
+            Marketplace
+          </button>
         </div>
         <div className="hero__media">
           <img src="/hero.png" alt="" />
@@ -105,15 +87,39 @@ export default function Landing() {
           </div>
         </section>
 
+        <section id="featured" className="lp-section" aria-labelledby="featured-heading">
+          <span className="lp-eyebrow">Featured properties</span>
+          <h2 id="featured-heading" className="lp-title">Properties available to buy</h2>
+          <ul className="market__grid featured__grid">
+            {featured.map((p) => (
+              <li key={p.id}>
+                <PropertyCard property={p} />
+              </li>
+            ))}
+          </ul>
+          <div className="featured__cta">
+            <Link to="/marketplace" className="btn btn--gold btn--pill btn--hero">
+              View all properties
+            </Link>
+          </div>
+        </section>
+
         <section id="services" className="lp-section" aria-labelledby="services-heading">
           <span className="lp-eyebrow">Services</span>
           <h2 id="services-heading" className="lp-title">Everything property, in one place</h2>
           <ul className="svc-grid">
             {SERVICE_INFO.map((s) => (
               <li key={s.title} className="svc-card">
-                <span className="svc-card__icon" aria-hidden="true">{s.icon}</span>
+                <img className="svc-card__img" src={s.image} alt={s.title} loading="lazy" />
+                <div className="svc-card__body">
                 <h3>{s.title}</h3>
                 <p>{s.text}</p>
+                {s.cta && (
+                  <Link to={s.cta.to} className="svc-card__cta">
+                    {s.cta.label} <span aria-hidden="true">→</span>
+                  </Link>
+                )}
+                </div>
               </li>
             ))}
           </ul>
@@ -121,18 +127,18 @@ export default function Landing() {
 
         <section id="consultants" className="lp-section" aria-labelledby="consultants-heading">
           <div className="consult">
-            <span className="lp-eyebrow">Our Living Gods Consultants</span>
-            <h2 id="consultants-heading" className="lp-title">Guided by faith, grounded in service</h2>
+            <h2 id="consultants-heading" className="consult__title">Our Living Gods Consultants</h2>
+            <p className="consult__tag">Guided by faith, grounded in service</p>
             <p>
               They are compulsorily associated with any of the spiritual organizations like{" "}
               <a href="https://en.wikipedia.org/wiki/Satyagnana_Sabha,_Vadalur" target="_blank" rel="noopener noreferrer">
-                Sathya Jnanasabha
-              </a>
-              . Established in the year 1872 by Vallalar,{" "}
+                Satyagnana Sabha
+              </a>{" "}
+              established in the year 1872 by Vallalar,{" "}
               <a href="https://en.wikipedia.org/wiki/Yogoda_Satsanga_Society_of_India" target="_blank" rel="noopener noreferrer">
                 YSS
-              </a>
-              . Established by Sri Paramahamsa Yogananda, the third lieutenant disciple of Mahavatar
+              </a>{" "}
+              established by Sri Paramahansa Yogananda, the third lieutenant disciple of Mahavatar
               Babaji, and any similar such organization which focus on the divine jyoti as the
               divine power.
             </p>
@@ -147,7 +153,7 @@ export default function Landing() {
               <li key={t.name} className="quote">
                 <p>&ldquo;{t.text}&rdquo;</p>
                 <div className="quote__who">
-                  <span className="quote__avatar" aria-hidden="true">{t.name[0]}</span>
+                  <img className="quote__avatar" src={t.photo} alt={`Photo of ${t.name}`} loading="lazy" width="44" height="44" />
                   <div>
                     <strong>{t.name}</strong>
                     <span>{t.role}</span>
@@ -171,8 +177,6 @@ export default function Landing() {
           </div>
         </section>
       </main>
-
-      <Footer />
-    </div>
+    </>
   );
 }

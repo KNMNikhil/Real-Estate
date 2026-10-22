@@ -82,7 +82,7 @@ export default function AgentLogin() {
       )}
 
       <p className="auth-split__switch">
-        Not an agent? <Link to="/login">Customer login</Link>
+        <Link to="/">← Back to home</Link>
       </p>
     </AuthLayout>
   );

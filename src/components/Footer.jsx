@@ -3,7 +3,7 @@ import Logo from "./Logo";
 
 // TODO: replace with the real contact details.
 const CONTACT = {
-  phone: "+91 98765 43210",
+  phone: "+91 99945 55702",
   email: "livinggodsrealestates@gmail.com",
   address: "Living Gods Real Estates, Chennai, Tamil Nadu, India",
   site: "www.livinggods.in",
@@ -24,9 +24,11 @@ export default function Footer() {
         </div>
         <nav className="site-footer__links" aria-label="Footer">
           <Link to="/#about">About</Link>
+          <Link to="/#featured">Properties</Link>
           <Link to="/#services">Services</Link>
           <Link to="/#consultants">Consultants</Link>
-          <Link to="/login">Login</Link>
+          <Link to="/marketplace">Marketplace</Link>
+          <Link to="/agent/login">Agent login</Link>
         </nav>
       </div>
       <ul className="site-footer__contact" aria-label="Contact information">

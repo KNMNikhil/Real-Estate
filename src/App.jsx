@@ -1,56 +1,32 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Activities from "./pages/Activities";
+import PublicLayout from "./components/PublicLayout";
 import AgentCalendar from "./pages/AgentCalendar";
 import AgentDashboard from "./pages/AgentDashboard";
 import AgentLayout from "./pages/AgentLayout";
 import AgentLogin from "./pages/AgentLogin";
 import AgentProfile from "./pages/AgentProfile";
-import Marketplace from "./pages/Marketplace";
-import Consultants from "./pages/Consultants";
-import DashboardLayout from "./pages/DashboardLayout";
-import Dashboard from "./pages/Dashboard";
-import Profile from "./pages/Profile";
 import Landing from "./pages/Landing";
-import Login from "./pages/Login";
+import Marketplace from "./pages/Marketplace";
 import NotFound from "./pages/NotFound";
-import Otp from "./pages/Otp";
 import PropertyDetails from "./pages/PropertyDetails";
 import SellFlow from "./pages/SellFlow";
 
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<Landing />} />
-      <Route path="/login" element={<Login mode="login" />} />
-      <Route path="/signup" element={<Login mode="signup" />} />
-      <Route path="/otp" element={<Otp />} />
-
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <DashboardLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route index element={<Dashboard />} />
-        <Route path="property/:propertyId" element={<PropertyDetails />} />
-        <Route path="buy" element={<Navigate to="/dashboard/marketplace" replace />} />
-        <Route path="sell" element={<SellFlow />} />
-        <Route path="profile" element={<Profile />} />
-        <Route path="marketplace" element={<Marketplace />} />
-        <Route path="activities" element={<Activities />} />
-        <Route path="consultants" element={<Consultants />} />
-        <Route path="services" element={<Navigate to="/dashboard" replace />} />
-        <Route path="functions/*" element={<Navigate to="/dashboard" replace />} />
+      <Route element={<PublicLayout />}>
+        <Route path="/" element={<Landing />} />
+        <Route path="/marketplace" element={<Marketplace />} />
+        <Route path="/property/:propertyId" element={<PropertyDetails />} />
+        <Route path="/sell" element={<SellFlow />} />
       </Route>
 
       <Route path="/agent/login" element={<AgentLogin />} />
       <Route
         path="/agent"
         element={
-          <ProtectedRoute role="agent">
+          <ProtectedRoute>
             <AgentLayout />
           </ProtectedRoute>
         }
@@ -59,6 +35,12 @@ export default function App() {
         <Route path="calendar" element={<AgentCalendar />} />
         <Route path="profile" element={<AgentProfile />} />
       </Route>
+
+      {/* Customer accounts no longer exist; send old links to the marketplace. */}
+      <Route path="/login" element={<Navigate to="/marketplace" replace />} />
+      <Route path="/signup" element={<Navigate to="/marketplace" replace />} />
+      <Route path="/otp" element={<Navigate to="/marketplace" replace />} />
+      <Route path="/dashboard/*" element={<Navigate to="/marketplace" replace />} />
 
       <Route path="*" element={<NotFound />} />
     </Routes>

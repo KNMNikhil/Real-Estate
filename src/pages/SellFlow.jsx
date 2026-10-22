@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ConsultantCard from "../components/ConsultantCard";
+import ContactForm from "../components/ContactForm";
 import DateStep from "../components/DateStep";
 import Modal from "../components/Modal";
 import PinForm from "../components/PinForm";
@@ -8,20 +9,31 @@ import PropertyForm from "../components/PropertyForm";
 import SlotConfirmModal from "../components/SlotConfirmModal";
 import StepIndicator from "../components/StepIndicator";
 import TimeStep from "../components/TimeStep";
-import { useAuth } from "../context/AuthContext";
 import { mouText } from "../data/dummyData";
 import { isSlotTaken, saveBooking } from "../utils/bookings";
 import { formatLongDate, formatTime } from "../utils/dates";
 import { findConsultantByPin, saveSubmittedProperty } from "../utils/lookup";
 import useScrollTop from "../utils/useScrollTop";
 
-const STEPS = ["Area", "Agent", "Date", "Time", "Agreement", "Property"];
+const STEPS = ["Your details", "Area", "Agent", "Date", "Time", "Agreement", "Property"];
+const SAMPLE_PINS = ["600089", "600001", "600020", "600041"];
+const DOCS = ["Sale deed or title document", "Encumbrance certificate", "Latest property tax receipt", "Your photo ID"];
+
+const TIPS = {
+  1: ["Why we ask", ["No account is needed.", "Your agent uses these details to confirm your meeting.", "We never share them outside Living Gods."]],
+  2: ["Why your PIN?", ["Each area has its own dedicated agent.", "Your agent knows local prices and buyers.", "Enter the PIN where the property is located."]],
+  3: ["What your agent does", ["Visits and verifies your property.", "Helps you set a fair price.", "Handles buyer visits and paperwork with you."]],
+  4: ["Choosing a date", ["Bookings open from tomorrow.", "Pick a day when you or a representative can be at the property.", "Use the arrows to see later months."]],
+  5: ["Choosing a time", ["Slots are 30 minutes apart.", "Greyed-out slots are already booked.", "Morning slots usually have the best light for photos."]],
+  6: ["About the agreement", ["It sets out how we list and promote your property.", "Read it fully before you accept.", "Your agent can explain any clause."]],
+  7: ["Tips for a great listing", ["Add clear, well-lit photos of every room.", "Use the real built-up area and expected price.", "A detailed description gets more visits."]],
+};
 
 export default function SellFlow() {
-  const { user } = useAuth();
   const navigate = useNavigate();
 
   const [step, setStep] = useState(1);
+  const [contact, setContact] = useState(null);
   const [pin, setPin] = useState("");
   const [consultant, setConsultant] = useState(null);
   const [noConsultant, setNoConsultant] = useState(false);
@@ -42,18 +54,8 @@ export default function SellFlow() {
     if (found) {
       setPin(value);
       setConsultant(found);
-      setStep(2);
+      setStep(3);
     }
-  };
-
-  const handleDateChange = (value) => {
-    setDate(value);
-    setTime("");
-  };
-
-  const handleConfirmSlot = () => {
-    setConfirmOpen(false);
-    setStep(5);
   };
 
   const handleSubmit = (values, media) => {
@@ -61,7 +63,7 @@ export default function SellFlow() {
     if (isSlotTaken(consultant.id, date, time)) {
       setFormError("That time slot was just taken. Please choose another time.");
       setTime("");
-      setStep(4);
+      setStep(5);
       return;
     }
     setSubmitting(true);
@@ -85,7 +87,7 @@ export default function SellFlow() {
       images: media.filter((m) => m.kind === "image").map((m) => m.url),
       consultantId: consultant.id,
       uploadedAt: new Date().toISOString(),
-      owner: { name: values.ownerName.trim(), contact: values.ownerContact.trim() },
+      owner: { name: contact.name, contact: contact.phone, email: contact.email },
     };
 
     const result = saveSubmittedProperty(property);
@@ -100,8 +102,9 @@ export default function SellFlow() {
       time,
       kind: "sell",
       propertyId: property.id,
-      userContact: user.contact,
-      userName: user.name,
+      userContact: contact.phone,
+      userName: contact.name,
+      userEmail: contact.email,
     });
     setSaveNote(
       result.photosDropped ? "Your photos were too large to store in this demo, so the listing was saved without them." : ""
@@ -110,30 +113,34 @@ export default function SellFlow() {
     setSuccessOpen(true);
   };
 
-  const TIPS = {
-    1: ["Why your PIN?", ["Each area has its own dedicated agent.", "Your agent knows local prices and buyers.", "Enter the PIN where the property is located, not where you live."]],
-    2: ["What your agent does", ["Visits and verifies your property.", "Helps you set a fair price.", "Handles buyer visits and paperwork with you."]],
-    3: ["Choosing a date", ["Bookings open from tomorrow.", "Pick a day when you or a representative can be at the property.", "You can pick a later month with the arrows."]],
-    4: ["Choosing a time", ["Slots are 30 minutes apart.", "Greyed-out slots are already booked.", "Morning slots usually have the best light for photos."]],
-    5: ["About the agreement", ["It sets out how we list and promote your property.", "Read it fully before you accept.", "Your agent can explain any clause."]],
-    6: ["Tips for a great listing", ["Add clear, well-lit photos of every room.", "Use the real built-up area and expected price.", "A detailed description gets more visits."]],
-  };
   const [tipTitle, tipList] = TIPS[step];
-  const DOCS = ["Sale deed or title document", "Encumbrance certificate", "Latest property tax receipt", "Your photo ID"];
-
-  const SAMPLE_PINS = ["600089", "600001", "600020", "600041"];
 
   return (
-    <div className="sell">
+    <div className="sell site-main">
       <header className="sell__head">
-        <h1>Sell your property</h1>
-        <p className="muted">Meet your area agent, sign the agreement and list your property in a few easy steps.</p>
+        <span className="lp-eyebrow">Sell a property</span>
+        <h1>List your property with us</h1>
+        <p className="muted">No account needed. Meet your area agent, sign the agreement and list your property in a few easy steps.</p>
       </header>
       <StepIndicator steps={STEPS} current={step} />
 
       <div className="sell__layout">
         <div className="sell__main">
           {step === 1 && (
+            <section className="card step-card" aria-labelledby="who-title">
+              <h2 id="who-title">Your details</h2>
+              <p className="muted">Tell us how to reach you.</p>
+              <ContactForm
+                initial={contact ?? {}}
+                onSubmit={(c) => {
+                  setContact(c);
+                  setStep(2);
+                }}
+              />
+            </section>
+          )}
+
+          {step === 2 && (
             <section className="card step-card sell-card">
               <span className="sell-card__icon" aria-hidden="true">⌖</span>
               <h2>Where is your property?</h2>
@@ -154,28 +161,42 @@ export default function SellFlow() {
                   </button>
                 ))}
               </div>
+              <div className="actions">
+                <button type="button" className="btn btn--ghost" onClick={() => setStep(1)}>
+                  Back
+                </button>
+                <span />
+              </div>
             </section>
           )}
 
-          {step === 2 && consultant && (
+          {step === 3 && consultant && (
             <>
               <ConsultantCard consultant={consultant} title="Your area agent" />
               <div className="actions">
-                <button type="button" className="btn btn--ghost" onClick={() => setStep(1)}>
+                <button type="button" className="btn btn--ghost" onClick={() => setStep(2)}>
                   Change PIN
                 </button>
-                <button type="button" className="btn btn--primary" onClick={() => setStep(3)}>
+                <button type="button" className="btn btn--primary" onClick={() => setStep(4)}>
                   Continue
                 </button>
               </div>
             </>
           )}
 
-          {step === 3 && (
-            <DateStep value={date} onChange={handleDateChange} onBack={() => setStep(2)} onNext={() => setStep(4)} />
+          {step === 4 && (
+            <DateStep
+              value={date}
+              onChange={(d) => {
+                setDate(d);
+                setTime("");
+              }}
+              onBack={() => setStep(3)}
+              onNext={() => setStep(5)}
+            />
           )}
 
-          {step === 4 && (
+          {step === 5 && (
             <>
               {formError && (
                 <p className="notice notice--error" role="alert">
@@ -190,13 +211,13 @@ export default function SellFlow() {
                   setTime(t);
                   setFormError("");
                 }}
-                onBack={() => setStep(3)}
+                onBack={() => setStep(4)}
                 onNext={() => setConfirmOpen(true)}
               />
             </>
           )}
 
-          {step === 5 && (
+          {step === 6 && (
             <section className="card step-card" aria-labelledby="mou-title">
               <h2 id="mou-title">Agreement (MOU)</h2>
               <p className="muted">Please read the terms before listing your property.</p>
@@ -208,17 +229,17 @@ export default function SellFlow() {
                 <span>I agree to the terms and conditions.</span>
               </label>
               <div className="actions">
-                <button type="button" className="btn btn--ghost" onClick={() => setStep(4)}>
+                <button type="button" className="btn btn--ghost" onClick={() => setStep(5)}>
                   Back
                 </button>
-                <button type="button" className="btn btn--primary" disabled={!agreed} onClick={() => setStep(6)}>
+                <button type="button" className="btn btn--primary" disabled={!agreed} onClick={() => setStep(7)}>
                   Continue
                 </button>
               </div>
             </section>
           )}
 
-          {step === 6 && (
+          {step === 7 && (
             <section aria-labelledby="details-title">
               <h2 id="details-title" className="sell__section-title">Property details</h2>
               {formError && (
@@ -227,16 +248,11 @@ export default function SellFlow() {
                 </p>
               )}
               <PropertyForm
-                initial={{
-                  pincode: pin,
-                  area: consultant.areaName,
-                  ownerName: user.name,
-                  ownerContact: user.contact,
-                }}
+                initial={{ pincode: pin, area: consultant.areaName }}
                 pinLocked
                 submitting={submitting}
                 onSubmit={handleSubmit}
-                onBack={() => setStep(5)}
+                onBack={() => setStep(6)}
               />
             </section>
           )}
@@ -252,7 +268,7 @@ export default function SellFlow() {
             </ul>
           </section>
 
-          {step >= 3 && (
+          {step >= 4 && (
             <section>
               <h3>Keep these ready</h3>
               <ul className="docs">
@@ -280,7 +296,10 @@ export default function SellFlow() {
         <SlotConfirmModal
           date={date}
           time={time}
-          onConfirm={handleConfirmSlot}
+          onConfirm={() => {
+            setConfirmOpen(false);
+            setStep(6);
+          }}
           onChange={() => setConfirmOpen(false)}
         />
       )}
@@ -293,15 +312,16 @@ export default function SellFlow() {
               type="button"
               className="btn btn--primary"
               autoFocus
-              onClick={() => navigate(`/dashboard/marketplace?pin=${pin}`)}
+              onClick={() => navigate(`/marketplace?pin=${pin}`)}
             >
-              Okay
+              View in marketplace
             </button>
           }
         >
           <p>
-            You have booked a meeting with <strong>{consultant.name}</strong> on{" "}
-            <strong>{formatLongDate(date)}</strong> at <strong>{formatTime(time)}</strong>.
+            Thank you, <strong>{contact.name}</strong>. You have booked a meeting with{" "}
+            <strong>{consultant.name}</strong> on <strong>{formatLongDate(date)}</strong> at{" "}
+            <strong>{formatTime(time)}</strong>. We will reach you at {contact.email}.
           </p>
           {saveNote && <p className="muted">{saveNote}</p>}
         </Modal>

@@ -68,6 +68,7 @@ function stored() {
     id: b.id,
     consultantId: b.consultantId,
     customerName: b.userName ?? "Customer",
+    customerEmail: b.userEmail ?? "",
     customerContact: b.userContact,
     kind: b.kind,
     propertyId: b.propertyId,

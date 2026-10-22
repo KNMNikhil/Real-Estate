@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
-import SafeImage from "../components/SafeImage";
-import { formatINR, formatPriceShort } from "../utils/format";
+import { useSearchParams } from "react-router-dom";
+import PropertyCard from "../components/PropertyCard";
 import { getAllProperties } from "../utils/lookup";
 import { validatePin } from "../utils/validators";
 
@@ -43,9 +42,10 @@ export default function Marketplace() {
   };
 
   return (
-    <div className="market">
-      <h1>Marketplace</h1>
-      <p className="muted">Browse projects across all areas.</p>
+    <div className="market site-main">
+      <span className="lp-eyebrow">Marketplace</span>
+      <h1>All properties</h1>
+      <p className="muted">Search by PIN code or use the filters. Open any property to book a visit.</p>
 
       <div className="market__bar">
         <div className="market__search">
@@ -96,21 +96,7 @@ export default function Marketplace() {
         <ul className="market__grid">
           {list.map((p) => (
             <li key={p.id}>
-              <Link to={`/dashboard/property/${p.id}`} className="mcard">
-                <SafeImage className="mcard__img" src={p.images?.[0]} alt={p.name} fallbackText="" />
-                <span className="mcard__type">{p.type}</span>
-                <div className="mcard__body">
-                  <h3>{p.name}</h3>
-                  <p className="muted">{p.area} · {p.pincode}</p>
-                  <p className="mcard__meta">
-                    {Number(p.sqft).toLocaleString("en-IN")} sq. ft.
-                    {p.bedrooms ? ` · ${p.bedrooms} BHK` : ""}
-                  </p>
-                  <p className="mcard__price">
-                    {formatINR(p.price)} <span>{formatPriceShort(p.price)}</span>
-                  </p>
-                </div>
-              </Link>
+              <PropertyCard property={p} />
             </li>
           ))}
         </ul>

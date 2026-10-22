@@ -1,30 +1,30 @@
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import ConsultantCard from "../components/ConsultantCard";
+import ContactForm from "../components/ContactForm";
 import DateStep from "../components/DateStep";
 import Gallery from "../components/Gallery";
 import Modal from "../components/Modal";
 import SlotConfirmModal from "../components/SlotConfirmModal";
 import StepIndicator from "../components/StepIndicator";
 import TimeStep from "../components/TimeStep";
-import { useAuth } from "../context/AuthContext";
 import { isSlotTaken, saveBooking } from "../utils/bookings";
 import { formatINR, formatPriceShort } from "../utils/format";
 import { findConsultantById, findPropertyById } from "../utils/lookup";
 import useScrollTop from "../utils/useScrollTop";
 
-const BUY_STEPS = ["Area", "Properties", "Details", "Date", "Time", "Confirm"];
-const STAGE_STEP = { details: 3, date: 4, time: 5 };
+const BUY_STEPS = ["Property", "Your details", "Date", "Time", "Confirmed"];
+const STAGE_STEP = { details: 1, info: 2, date: 3, time: 4 };
 
 export default function PropertyDetails() {
   const { propertyId } = useParams();
-  const { user } = useAuth();
   const navigate = useNavigate();
 
   const property = findPropertyById(propertyId);
   const consultant = property ? findConsultantById(property.consultantId) : null;
 
-  const [stage, setStage] = useState("details"); // details | date | time
+  const [stage, setStage] = useState("details"); // details | info | date | time
+  const [contact, setContact] = useState(null);
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -35,16 +35,16 @@ export default function PropertyDetails() {
 
   if (!property) {
     return (
-      <div className="narrow">
+      <div className="narrow site-main">
         <p className="notice">This property could not be found.</p>
-        <Link to="/dashboard/marketplace" className="btn btn--outline">
+        <Link to="/marketplace" className="btn btn--outline">
           Back to marketplace
         </Link>
       </div>
     );
   }
 
-  const backToList = `/dashboard/marketplace?pin=${property.pincode}`;
+  const backToList = `/marketplace?pin=${property.pincode}`;
   const short = formatPriceShort(property.price);
   const rooms = (n) => (n === null || n === undefined ? "N/A" : n);
 
@@ -72,19 +72,20 @@ export default function PropertyDetails() {
       time,
       kind: "buy",
       propertyId: property.id,
-      userContact: user.contact,
-      userName: user.name,
+      userContact: contact.phone,
+      userName: contact.name,
+      userEmail: contact.email,
     });
     setConfirmOpen(false);
     setVisitOpen(true);
   };
 
   return (
-    <div className="narrow">
+    <div className="narrow site-main">
       <Link to={backToList} className="back-link">
         ‹ Back to marketplace
       </Link>
-      <StepIndicator steps={BUY_STEPS} current={visitOpen ? 6 : STAGE_STEP[stage]} />
+      <StepIndicator steps={BUY_STEPS} current={visitOpen ? 5 : STAGE_STEP[stage]} />
 
       {stage === "details" && (
         <article className="property-detail">
@@ -109,8 +110,8 @@ export default function PropertyDetails() {
             <>
               <ConsultantCard consultant={consultant} title="Your consultant" />
               <div className="actions actions--end">
-                <button type="button" className="btn btn--primary btn--large" onClick={() => setStage("date")}>
-                  Contact Agent
+                <button type="button" className="btn btn--primary btn--large" onClick={() => setStage("info")}>
+                  Book a visit
                 </button>
               </div>
             </>
@@ -120,6 +121,23 @@ export default function PropertyDetails() {
         </article>
       )}
 
+      {stage === "info" && (
+        <section className="card step-card" aria-labelledby="info-title">
+          <h2 id="info-title">Your details</h2>
+          <p className="muted">
+            We share these with your agent, {consultant.name}, so they can confirm your visit. No account is needed.
+          </p>
+          <ContactForm
+            initial={contact ?? {}}
+            onBack={() => setStage("details")}
+            onSubmit={(c) => {
+              setContact(c);
+              setStage("date");
+            }}
+          />
+        </section>
+      )}
+
       {stage === "date" && (
         <DateStep
           value={date}
@@ -127,7 +145,7 @@ export default function PropertyDetails() {
             setDate(d);
             setTime("");
           }}
-          onBack={() => setStage("details")}
+          onBack={() => setStage("info")}
           onNext={() => setStage("time")}
         />
       )}
@@ -170,7 +188,7 @@ export default function PropertyDetails() {
               type="button"
               className="btn btn--primary"
               autoFocus
-              onClick={() => navigate("/dashboard/marketplace")}
+              onClick={() => navigate("/marketplace")}
             >
               Okay
             </button>

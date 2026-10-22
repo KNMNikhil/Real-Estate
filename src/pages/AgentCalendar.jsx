@@ -67,7 +67,7 @@ export default function AgentCalendar() {
                   <span>
                     {a.customerName}
                     <em>
-                      {a.kind === "sell" ? "Selling" : "Buying"} · {findPropertyById(a.propertyId)?.name ?? "Property"} · {a.customerContact}
+                      {a.kind === "sell" ? "Selling" : "Buying"} · {findPropertyById(a.propertyId)?.name ?? "Property"} · {a.customerContact}{a.customerEmail ? ` · ${a.customerEmail}` : ""}
                     </em>
                   </span>
                   <span className={`status status--${a.status}`}>{a.status}</span>
