@@ -84,7 +84,7 @@ export const properties = [
     price: 14500000,
     address: "12, Temple Street, Nandambakkam, Chennai - 600089",
     description: "Independent villa with private garden and terrace.",
-    images: [],
+    images: [img("sunrise-a"), img("sunrise-b")],
     consultantId: "C001",
     uploadedAt: "2026-09-20T09:00:00",
   },

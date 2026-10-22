@@ -4,7 +4,7 @@ import PropertyCard from "../components/PropertyCard";
 import { getAllProperties } from "../utils/lookup";
 import { validatePin } from "../utils/validators";
 
-const TYPES = ["All", "Apartment", "Villa", "Independent House", "Plot"];
+const TYPES = ["All", "Apartment", "Villa", "Independent House", "Plot", "Commercial"];
 const PRICES = [
   ["any", "Any price", 0, Infinity],
   ["u80", "Under ₹80 L", 0, 8000000],
@@ -16,7 +16,7 @@ export default function Marketplace() {
   const all = useMemo(() => getAllProperties(), []);
   const [params] = useSearchParams();
   const [pin, setPin] = useState(() => (params.get("pin") ?? "").replace(/\D/g, "").slice(0, 6));
-  const [type, setType] = useState("All");
+  const [type, setType] = useState(() => (TYPES.includes(params.get("type")) ? params.get("type") : "All"));
   const [price, setPrice] = useState("any");
   const [beds, setBeds] = useState("any");
   const [sort, setSort] = useState("new");

@@ -7,9 +7,16 @@ export const findConsultantByPin = (pin) =>
 export const findConsultantById = (id) =>
   consultants.find((c) => c.id === id) ?? null;
 
+// Listings without photos get a demo image so cards and galleries are never blank.
+const withPhoto = (p) =>
+  p.images?.length
+    ? p
+    : { ...p, images: [`/properties/${(Array.from(String(p.id)).reduce((h, c) => h + c.charCodeAt(0), 0) % 10) + 1}.jpg`] };
+
 const getSubmittedProperties = () => readJSON(KEYS.properties, []);
 
-export const getAllProperties = () => [...getSubmittedProperties(), ...properties, ...moreProperties];
+export const getAllProperties = () =>
+  [...getSubmittedProperties(), ...properties, ...moreProperties].map(withPhoto);
 
 export const findPropertyById = (id) =>
   getAllProperties().find((p) => p.id === id) ?? null;

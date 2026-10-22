@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import Footer from "./Footer";
 import Logo from "./Logo";
 
@@ -7,6 +7,22 @@ import Logo from "./Logo";
 export default function PublicLayout() {
   const navigate = useNavigate();
   const { pathname, hash } = useLocation();
+  const [atHero, setAtHero] = useState(true);
+
+  // Home is highlighted only while the hero is on screen; scrolling down turns it off.
+  useEffect(() => {
+    const onScroll = () => setAtHero(window.scrollY < window.innerHeight * 0.5);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const goHome = (e) => {
+    if (pathname === "/") {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
   useEffect(() => {
     if (hash) document.getElementById(hash.slice(1))?.scrollIntoView();
@@ -21,11 +37,16 @@ export default function PublicLayout() {
           <span className="landing__brand-name">Living Gods</span>
         </Link>
         <ul className="landing__links">
-          <li><Link to="/#about">About</Link></li>
-          <li><Link to="/#featured">Properties</Link></li>
-          <li><Link to="/#services">Services</Link></li>
-          <li><Link to="/#consultants">Consultants</Link></li>
-          <li><Link to="/#faq">FAQ</Link></li>
+          <li>
+            <Link to="/" onClick={goHome} className={pathname === "/" && atHero ? "active" : ""}>
+              Home
+            </Link>
+          </li>
+          <li><Link to="/marketplace">Buy</Link></li>
+          <li><NavLink to="/sell">Sell</NavLink></li>
+          <li><NavLink to="/marketplace" end>All properties</NavLink></li>
+          <li><NavLink to="/about">About us</NavLink></li>
+          <li><NavLink to="/contact">Contact us</NavLink></li>
         </ul>
         <div className="landing__actions">
           <button type="button" className="btn btn--gold btn--pill" onClick={() => navigate("/marketplace")}>

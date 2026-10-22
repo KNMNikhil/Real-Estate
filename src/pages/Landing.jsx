@@ -1,13 +1,15 @@
 import { Link, useNavigate } from "react-router-dom";
+import Icon from "../components/Icon";
 import PropertyCard from "../components/PropertyCard";
+import PropertyTypes from "../components/PropertyTypes";
 import { getAllProperties } from "../utils/lookup";
 
 const SERVICE_INFO = [
-  { title: "Buying of Property", text: "Browse verified properties in your area and book a visit with your consultant.", image: "/services/buy.jpg", cta: { to: "/marketplace", label: "Buy a property" } },
-  { title: "Selling of Property", text: "Meet your area consultant and list your property with complete transparency.", image: "/services/sell.jpg", cta: { to: "/sell", label: "Sell a property" } },
-  { title: "Property Management", text: "Collection of rent out and building maintenance, handled for you.", image: "/services/manage.jpg" },
-  { title: "Layout Approval", text: "Guidance and support through layout approvals from start to finish.", image: "/services/layout.jpg" },
-  { title: "Plots Promotions", text: "Reach genuine buyers with focused promotion of your plots.", image: "/services/plots.jpg" },
+  { title: "Buying of Property", text: "Browse verified properties in your area and book a visit with your consultant.", icon: "svcBuy", cta: { to: "/marketplace", label: "Buy a property" } },
+  { title: "Selling of Property", text: "Meet your area consultant and list your property with complete transparency.", icon: "svcSell", cta: { to: "/sell", label: "Sell a property" } },
+  { title: "Property Management", text: "Collection of rent out and building maintenance, handled for you.", icon: "svcManage" },
+  { title: "Layout Approval", text: "Guidance and support through layout approvals from start to finish.", icon: "svcLayout" },
+  { title: "Plots Promotions", text: "Reach genuine buyers with focused promotion of your plots.", icon: "svcPlots" },
 ];
 
 const TESTIMONIALS = [
@@ -42,7 +44,7 @@ const FAQS = [
 export default function Landing() {
   const navigate = useNavigate();
   const all = getAllProperties().sort((x, y) => new Date(y.uploadedAt) - new Date(x.uploadedAt));
-  const featured = all.slice(0, 10);
+  const featured = all.slice(0, 6);
 
   return (
     <>
@@ -63,30 +65,9 @@ export default function Landing() {
         </div>
       </header>
 
-      <main className="lp">
-        <section id="about" className="lp-section" aria-labelledby="about-heading">
-          <span className="lp-eyebrow">About</span>
-          <div className="about">
-            <h2 id="about-heading" className="lp-title">
-              Real estate service, <em>redefined.</em>
-            </h2>
-            <div className="about__body">
-              <p className="about__lead">
-                Highly transparent, no words, no enticing literature, only work and service.
-              </p>
-              <p>
-                We believe in the maxim, &lsquo;Action speaks louder than words.&rsquo; Our deeds
-                will speak, of course, with smiling face, respect, and honour.
-              </p>
-              <ul className="about__tags">
-                <li>Transparent</li>
-                <li>Respectful</li>
-                <li>Action first</li>
-              </ul>
-            </div>
-          </div>
-        </section>
+      <PropertyTypes />
 
+      <main className="lp">
         <section id="featured" className="lp-section" aria-labelledby="featured-heading">
           <span className="lp-eyebrow">Featured properties</span>
           <h2 id="featured-heading" className="lp-title">Properties available to buy</h2>
@@ -106,42 +87,35 @@ export default function Landing() {
 
         <section id="services" className="lp-section" aria-labelledby="services-heading">
           <span className="lp-eyebrow">Services</span>
-          <h2 id="services-heading" className="lp-title">Everything property, in one place</h2>
-          <ul className="svc-grid">
-            {SERVICE_INFO.map((s) => (
-              <li key={s.title} className="svc-card">
-                <img className="svc-card__img" src={s.image} alt={s.title} loading="lazy" />
-                <div className="svc-card__body">
+          <h2 id="services-heading" className="lp-title">Everything about property</h2>
+          <div className="bento">
+            {SERVICE_INFO.slice(0, 2).map((s, i) => (
+              <article key={s.title} className={`bento__big ${i === 0 ? "is-buy" : "is-sell"}`}>
+                <span className="bento__ghost" aria-hidden="true">
+                  <Icon name={s.icon} size={220} />
+                </span>
+                <span className="bento__icon" aria-hidden="true">
+                  <Icon name={s.icon} size={46} />
+                </span>
                 <h3>{s.title}</h3>
                 <p>{s.text}</p>
-                {s.cta && (
-                  <Link to={s.cta.to} className="svc-card__cta">
-                    {s.cta.label} <span aria-hidden="true">→</span>
-                  </Link>
-                )}
-                </div>
-              </li>
+                <Link to={s.cta.to} className="bento__btn">
+                  {s.cta.label} <span aria-hidden="true">→</span>
+                </Link>
+              </article>
             ))}
-          </ul>
-        </section>
-
-        <section id="consultants" className="lp-section" aria-labelledby="consultants-heading">
-          <div className="consult">
-            <h2 id="consultants-heading" className="consult__title">Our Living Gods Consultants</h2>
-            <p className="consult__tag">Guided by faith, grounded in service</p>
-            <p>
-              They are compulsorily associated with any of the spiritual organizations like{" "}
-              <a href="https://en.wikipedia.org/wiki/Satyagnana_Sabha,_Vadalur" target="_blank" rel="noopener noreferrer">
-                Satyagnana Sabha
-              </a>{" "}
-              established in the year 1872 by Vallalar,{" "}
-              <a href="https://en.wikipedia.org/wiki/Yogoda_Satsanga_Society_of_India" target="_blank" rel="noopener noreferrer">
-                YSS
-              </a>{" "}
-              established by Sri Paramahansa Yogananda, the third lieutenant disciple of Mahavatar
-              Babaji, and any similar such organization which focus on the divine jyoti as the
-              divine power.
-            </p>
+            {SERVICE_INFO.slice(2).map((s, i) => (
+              <article key={s.title} className="bento__small">
+                <span className="bento__num" aria-hidden="true">0{i + 3}</span>
+                <span className="bento__icon is-small" aria-hidden="true">
+                  <Icon name={s.icon} size={30} />
+                </span>
+                <div>
+                  <h3>{s.title}</h3>
+                  <p>{s.text}</p>
+                </div>
+              </article>
+            ))}
           </div>
         </section>
 

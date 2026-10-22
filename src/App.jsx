@@ -1,11 +1,13 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicLayout from "./components/PublicLayout";
+import About from "./pages/About";
 import AgentCalendar from "./pages/AgentCalendar";
 import AgentDashboard from "./pages/AgentDashboard";
 import AgentLayout from "./pages/AgentLayout";
 import AgentLogin from "./pages/AgentLogin";
 import AgentProfile from "./pages/AgentProfile";
+import Contact from "./pages/Contact";
 import Landing from "./pages/Landing";
 import Marketplace from "./pages/Marketplace";
 import NotFound from "./pages/NotFound";
@@ -17,6 +19,8 @@ export default function App() {
     <Routes>
       <Route element={<PublicLayout />}>
         <Route path="/" element={<Landing />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="/marketplace" element={<Marketplace />} />
         <Route path="/property/:propertyId" element={<PropertyDetails />} />
         <Route path="/sell" element={<SellFlow />} />

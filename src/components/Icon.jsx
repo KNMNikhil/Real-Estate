@@ -42,6 +42,103 @@ const PATHS = {
       <path d="M16 2v4M8 2v4M3 10h18" />
     </>
   ),
+  svcBuy: (
+    <>
+      <path d="M3 11 12 3l9 8" />
+      <path d="M5 9.5V20a1 1 0 0 0 1 1h5" />
+      <path d="M19 9.5V12" />
+      <circle cx="16.5" cy="16.5" r="2.5" />
+      <path d="m18.4 18.4 3 3M20.2 20.2l1.4-1.4" />
+    </>
+  ),
+  svcSell: (
+    <>
+      <path d="M3 11 12 3l9 8" />
+      <path d="M5 9.5V20a1 1 0 0 0 1 1h4" />
+      <path d="M19 9.5v2" />
+      <circle cx="16.5" cy="16.5" r="5" fill="var(--icon-fill, #fff)" />
+      <path d="M14.2 14.3h4.6M14.2 16.2h4.6M14.8 14.3c2.8 0 2.8 3.6 0 3.6h-.2l2.9 2.3" />
+    </>
+  ),
+  svcManage: (
+    <>
+      <rect x="3" y="3" width="11" height="18" rx="1" />
+      <path d="M6.5 7h1M10 7h1M6.5 11h1M10 11h1M6.5 15h1M10 15h1" />
+      <path d="M8 21v-3h2v3" />
+      <circle cx="18" cy="14" r="2.5" />
+      <path d="M18 9.5v1.5M18 17v1.5M13.5 14H15M21 14h1.5M14.8 10.8l1 1M20.2 16.2l1 1M21.2 10.8l-1 1M15.8 16.2l-1 1" />
+    </>
+  ),
+  svcLayout: (
+    <>
+      <rect x="3" y="3" width="18" height="15" rx="1.5" />
+      <path d="M3 9h8M11 3v9M11 12h6M17 12v6" />
+      <circle cx="17.5" cy="18" r="4" fill="var(--icon-fill, #fff)" />
+      <path d="m15.6 18 1.4 1.4 2.6-2.8" />
+    </>
+  ),
+  svcPlots: (
+    <>
+      <path d="M3 20 7 11h13l-3 9z" />
+      <path d="M12.7 11 11 20M8.2 15.5h11" strokeDasharray="1.5 2" />
+      <path d="M12 2.5a4 4 0 0 0-4 4c0 3 4 6 4 6s4-3 4-6a4 4 0 0 0-4-4z" fill="var(--icon-fill, #fff)" />
+      <circle cx="12" cy="6.5" r="1.3" />
+    </>
+  ),
+  typeApartment: (
+    <>
+      <rect x="5" y="2.5" width="14" height="19" rx="1.5" />
+      <path d="M8.5 7h1.5M14 7h1.5M8.5 11h1.5M14 11h1.5M8.5 15h1.5M14 15h1.5" />
+      <path d="M10.5 21.5v-3.5h3v3.5" />
+    </>
+  ),
+  typeVilla: (
+    <>
+      <path d="M2.5 11 12 3l9.5 8" />
+      <path d="M4.5 9.5V21h15V9.5" />
+      <path d="M8 21v-5h8v5" />
+      <path d="M8 12.5h2M14 12.5h2" />
+      <path d="M17 4.5V7" />
+    </>
+  ),
+  typeHouse: (
+    <>
+      <path d="M3 11 12 3l9 8" />
+      <path d="M5 9.5V21h14V9.5" />
+      <rect x="9.5" y="14" width="5" height="7" rx="0.5" />
+    </>
+  ),
+  typeShop: (
+    <>
+      <path d="M3 9.5 4.5 4h15L21 9.5" />
+      <path d="M3 9.5a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0" />
+      <path d="M4.5 12.5V21h15v-8.5" />
+      <rect x="9.5" y="15" width="5" height="6" />
+    </>
+  ),
+  contactMap: (
+    <>
+      <path d="m3 7 6-3 6 3 6-3v13l-6 3-6-3-6 3z" />
+      <path d="M9 4v13M15 7v13" />
+    </>
+  ),
+  contactPhone: (
+    <>
+      <path d="M5 4h3l2 5-2.2 1.4a11 11 0 0 0 5.8 5.8L15 14l5 2v3a2 2 0 0 1-2 2A15 15 0 0 1 3 6a2 2 0 0 1 2-2z" />
+    </>
+  ),
+  contactMail: (
+    <>
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="m3 7 9 6 9-6" />
+    </>
+  ),
+  contactChat: (
+    <>
+      <path d="M4 5h12a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H9l-4 3.5V14H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z" />
+      <path d="M8 9h5M8 11.5h3M18.5 9H20a1 1 0 0 1 1 1v8l-3-2.5h-4a1 1 0 0 1-1-1v-1" />
+    </>
+  ),
   logout: (
     <>
       <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />

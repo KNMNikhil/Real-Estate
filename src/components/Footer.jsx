@@ -1,13 +1,7 @@
 import { Link } from "react-router-dom";
+import { CONTACT } from "../data/contact";
 import Logo from "./Logo";
 
-// TODO: replace with the real contact details.
-const CONTACT = {
-  phone: "+91 99945 55702",
-  email: "livinggodsrealestates@gmail.com",
-  address: "Living Gods Real Estates, Chennai, Tamil Nadu, India",
-  site: "www.livinggods.in",
-};
 
 export default function Footer() {
   return (
@@ -23,15 +17,15 @@ export default function Footer() {
           </div>
         </div>
         <nav className="site-footer__links" aria-label="Footer">
-          <Link to="/#about">About</Link>
-          <Link to="/#featured">Properties</Link>
-          <Link to="/#services">Services</Link>
-          <Link to="/#consultants">Consultants</Link>
-          <Link to="/marketplace">Marketplace</Link>
+          <Link to="/">Home</Link>
+          <Link to="/marketplace">Buy</Link>
+          <Link to="/sell">Sell</Link>
+          <Link to="/about">About us</Link>
+          <Link to="/contact">Contact us</Link>
           <Link to="/agent/login">Agent login</Link>
         </nav>
       </div>
-      <ul className="site-footer__contact" aria-label="Contact information">
+      <ul className="site-footer__contact" id="contact" aria-label="Contact information">
         <li>
           <span>Phone</span>
           <a href={`tel:${CONTACT.phone.replace(/\s/g, "")}`}>{CONTACT.phone}</a>
