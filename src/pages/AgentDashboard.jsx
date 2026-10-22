@@ -89,7 +89,9 @@ export default function AgentDashboard() {
         <h2>Customers per day, last 14 days</h2>
         <BarChart data={days} series={series} />
         <p className="muted chart__note">
-          Busiest day: {busiest.sub} {busiest.iso.slice(5)} with {busiest.total} customers.
+          {busiest.total > 0
+            ? `Busiest day: ${busiest.sub} ${busiest.iso.slice(5)} with ${busiest.total} customers.`
+            : "No appointments in the last 14 days yet."}
         </p>
       </section>
 

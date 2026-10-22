@@ -80,9 +80,8 @@ export default function Landing() {
               <div className="about__maxim-block">
                 <p className="about__intro">We believe in the maxim,</p>
                 <blockquote className="about__quote">
-                  <span className="about__quote-mark" aria-hidden="true">&ldquo;</span>
                   <p>
-                    Action speaks <mark>louder than words.</mark>
+                    &ldquo;Action speaks louder than words.&rdquo;
                   </p>
                 </blockquote>
                 <p className="about__outro">Our deeds will speak, of course, with smiling face, respect, and honour.</p>

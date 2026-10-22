@@ -4011,3 +4011,13 @@ a.contact__value:hover {
     white-space: nowrap;
   }
 }
+
+.about__quote {
+  padding: 36px 40px;
+}
+.about__quote-mark {
+  display: none;
+}
+.about__quote mark {
+  background: none;
+}

@@ -7,7 +7,7 @@
 -- Design (the website only holds the public "anon" key, so security is
 -- done in the database):
 --   * Tables have Row Level Security ON and no public read access, except
---     `properties` (the marketplace) and the `agents_public` view.
+--     `properties` (the marketplace).
 --   * Customers never log in. Booking, listing and contact messages go
 --     through functions that validate the data and store it.
 --   * Agents log in with agent_login() and get a session token. Only
@@ -122,12 +122,10 @@ create policy "anyone can send a message" on public.contact_messages
     and length(coalesce(message, '')) <= 150
   );
 
--- Public, non-secret agent details (no password hash).
-create or replace view public.agents_public as
-  select id, name, pincode, area_name, contact, email, address, photo
-  from public.agents;
-
-grant select on public.agents_public to anon, authenticated;
+-- (The old agents_public view was removed: the website does not need it and
+-- Supabase marks views as "unrestricted". Agent details are returned by
+-- agent_login() instead.)
+drop view if exists public.agents_public;
 
 -- ---------------------------------------------------------------------
 -- Functions
@@ -365,95 +363,26 @@ values
    extensions.crypt('Agent@600041', extensions.gen_salt('bf')))
 on conflict (id) do nothing;
 
--- Sample customers and about four months of sample appointments so the
--- agent dashboards and calendars are not empty. Skipped if you already
--- have appointments. Delete these rows once real bookings come in.
-do $$
-declare
-  first_names text[] := array['Ravi','Anita','Karthik','Divya','Farhan','Lakshmi',
-                              'Vignesh','Sneha','Arjun','Pooja','Suresh','Harini'];
-  last_names  text[] := array['Kumar','Sharma','Iyer'];
-  times       text[] := array['09:00','09:30','10:00','10:30','11:00','11:30',
-                              '12:00','12:30','13:00','13:30','14:00','14:30',
-                              '15:00','15:30','16:00','16:30','17:00','17:30'];
-  a           record;
-  props       jsonb := jsonb_build_object(
-    'C001', jsonb_build_array(
-              jsonb_build_object('id','P001','name','Green Valley Apartments'),
-              jsonb_build_object('id','P002','name','Sunrise Villa'),
-              jsonb_build_object('id','P006','name','Orchid Heights'),
-              jsonb_build_object('id','P007','name','Silver Oak Plots')),
-    'C002', jsonb_build_array(
-              jsonb_build_object('id','P003','name','Heritage Court'),
-              jsonb_build_object('id','P008','name','Marina Residency'),
-              jsonb_build_object('id','P009','name','Old Town Villa')),
-    'C003', jsonb_build_array(
-              jsonb_build_object('id','P004','name','Lakeview Plots'),
-              jsonb_build_object('id','P010','name','Riverside Towers'),
-              jsonb_build_object('id','P011','name','Banyan House')),
-    'C004', jsonb_build_array(
-              jsonb_build_object('id','P005','name','Palm Grove Independent House'),
-              jsonb_build_object('id','P012','name','Coastal Breeze Apartments'),
-              jsonb_build_object('id','P013','name','Green Acres Plots')));
-  plist       jsonb;
-  n_cust      int;
-  i           int;
-  d           int;
-  k           int;
-  cnt         int;
-  h           bigint;
-  v_date      date;
-  v_cust      uuid;
-  v_prop      jsonb;
-begin
-  if exists (select 1 from public.appointments) then
-    return;
-  end if;
+-- ---------------------------------------------------------------------
+-- Sample properties for the marketplace (they are also in the website code,
+-- so nothing breaks if you delete them). Delete any you do not want.
+-- ---------------------------------------------------------------------
 
-  i := 0;
-  for fn in 1..array_length(first_names, 1) loop
-    for ln in 1..array_length(last_names, 1) loop
-      i := i + 1;
-      insert into public.customers (name, email, phone)
-      values (
-        first_names[fn] || ' ' || last_names[ln],
-        lower(first_names[fn] || '.' || last_names[ln]) || '@example.com',
-        '98' || lpad((40000000 + i * 1234567)::text, 8, '0')
-      )
-      on conflict (phone) do nothing;
-    end loop;
-  end loop;
-  select count(*) into n_cust from public.customers;
-
-  for a in select id from public.agents order by id loop
-    plist := props -> a.id;
-    for d in -120..14 loop
-      v_date := current_date + d;
-      h := abs(hashtext(a.id || ':' || d::text)::bigint);
-      if extract(dow from v_date) in (0, 6) then
-        cnt := case when h % 4 = 0 then 1 else 0 end;      -- quieter weekends
-      else
-        cnt := 1 + (h % 2);                                 -- 1 or 2 on weekdays
-      end if;
-
-      for k in 0..cnt - 1 loop
-        h := abs(hashtext(a.id || ':' || d::text || ':' || k::text)::bigint);
-        select id into v_cust from public.customers
-          order by phone offset (h % n_cust) limit 1;
-        v_prop := plist -> ((h % jsonb_array_length(plist))::int);
-
-        insert into public.appointments (
-          agent_id, customer_id, kind, property_id, property_name,
-          appointment_date, appointment_time
-        ) values (
-          a.id, v_cust,
-          case when (h / 5) % 3 = 0 then 'sell' else 'buy' end,
-          v_prop->>'id', v_prop->>'name', v_date,
-          times[((((abs(hashtext(a.id || ':' || d::text)::bigint) + k * 5) % 18) + 1))::int]
-        )
-        on conflict (agent_id, appointment_date, appointment_time) do nothing;
-      end loop;
-    end loop;
-  end loop;
-end;
-$$;
+insert into public.properties (
+  id, name, type, pincode, area, sqft, bedrooms, bathrooms, floor, facing,
+  price, address, description, images, agent_id, created_at
+) values
+  ('P001', 'Green Valley Apartments', 'Apartment', '600089', 'Nandambakkam', 1450, 3, 2, '4th of 7', 'East', 8500000, 'Plot 45, Ring Road, Nandambakkam, Chennai - 600089', 'Spacious 3BHK with cross ventilation, covered parking and a children''s play area.', array['/properties/5.jpg', '/properties/6.jpg']::text[], 'C001', '2026-10-15T10:30:00'),
+  ('P002', 'Sunrise Villa', 'Villa', '600089', 'Nandambakkam', 2200, 4, 3, 'Ground + 1', 'North', 14500000, '12, Temple Street, Nandambakkam, Chennai - 600089', 'Independent villa with private garden and terrace.', array['/properties/10.jpg', '/properties/1.jpg']::text[], 'C001', '2026-09-20T09:00:00'),
+  ('P003', 'Heritage Court', 'Apartment', '600001', 'Chennai GPO / Parrys', 980, 2, 2, '2nd of 5', 'West', 6200000, '10, Mint Street, Parrys, Chennai - 600001', 'Well-maintained 2BHK near the metro station.', array['/properties/7.jpg']::text[], 'C002', '2026-10-18T14:20:00'),
+  ('P004', 'Lakeview Plots', 'Plot', '600020', 'Adyar', 2400, null, null, 'N/A', 'South', 22000000, 'Survey No. 88, Adyar, Chennai - 600020', 'DTCP approved residential plot near the river.', array['/properties/8.jpg']::text[], 'C003', '2026-10-10T11:00:00'),
+  ('P005', 'Palm Grove Independent House', 'Independent House', '600041', 'Thiruvanmiyur', 1800, 3, 3, 'G+1', 'East', 16800000, '5, Palm Grove Road, Thiruvanmiyur, Chennai - 600041', 'Newly renovated independent house with terrace garden.', array['/properties/9.jpg', '/properties/10.jpg', '/properties/1.jpg']::text[], 'C004', '2026-10-17T16:45:00'),
+  ('P006', 'Orchid Heights', 'Apartment', '600089', 'Nandambakkam', 1120, 2, 2, '6th of 9', 'North', 6900000, '21, Ring Road, Nandambakkam, Chennai - 600089', 'Modern 2BHK with club house and gym access.', array['/properties/10.jpg', '/properties/1.jpg']::text[], 'C001', '2026-10-12T10:00:00'),
+  ('P007', 'Silver Oak Plots', 'Plot', '600089', 'Nandambakkam', 1800, null, null, 'N/A', 'East', 9800000, 'Survey No. 14, Nandambakkam, Chennai - 600089', 'CMDA approved plots in a gated layout.', array['/properties/1.jpg']::text[], 'C001', '2026-10-08T09:30:00'),
+  ('P008', 'Marina Residency', 'Apartment', '600001', 'Chennai GPO / Parrys', 1350, 3, 2, '8th of 12', 'East', 11200000, '4, Beach Road, Parrys, Chennai - 600001', 'Sea-facing 3BHK close to the business district.', array['/properties/2.jpg', '/properties/3.jpg']::text[], 'C002', '2026-10-14T12:00:00'),
+  ('P009', 'Old Town Villa', 'Villa', '600001', 'Chennai GPO / Parrys', 2600, 4, 4, 'G+2', 'South', 24500000, '18, Armenian Street, Parrys, Chennai - 600001', 'Heritage-style villa with courtyard and parking for three cars.', array['/properties/3.jpg']::text[], 'C002', '2026-09-28T15:10:00'),
+  ('P010', 'Riverside Towers', 'Apartment', '600020', 'Adyar', 1650, 3, 3, '10th of 14', 'North', 18900000, '9, Lattice Bridge Road, Adyar, Chennai - 600020', 'Premium riverside apartment with 24x7 security.', array['/properties/5.jpg', '/properties/6.jpg']::text[], 'C003', '2026-10-16T09:20:00'),
+  ('P011', 'Banyan House', 'Independent House', '600020', 'Adyar', 2100, 4, 3, 'G+1', 'West', 21500000, '3, Gandhi Nagar, Adyar, Chennai - 600020', 'Corner house with a mature garden and car porch.', array['/properties/6.jpg']::text[], 'C003', '2026-10-03T11:40:00'),
+  ('P012', 'Coastal Breeze Apartments', 'Apartment', '600041', 'Thiruvanmiyur', 1020, 2, 2, '3rd of 6', 'East', 7600000, '27, East Coast Road, Thiruvanmiyur, Chennai - 600041', 'Walkable to the beach and metro with covered parking.', array['/properties/7.jpg', '/properties/8.jpg']::text[], 'C004', '2026-10-13T13:30:00'),
+  ('P013', 'Green Acres Plots', 'Plot', '600041', 'Thiruvanmiyur', 3000, null, null, 'N/A', 'North', 15500000, 'Survey No. 52, Thiruvanmiyur, Chennai - 600041', 'Residential plots with tarred roads and drainage.', array['/properties/8.jpg']::text[], 'C004', '2026-09-25T10:15:00')
+on conflict (id) do nothing;
