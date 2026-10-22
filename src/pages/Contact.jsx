@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Icon from "../components/Icon";
 import { CONTACT } from "../data/contact";
+import { sendContactMessage } from "../lib/api";
 import { KEYS, readJSON, writeJSON } from "../utils/storage";
 import { validateContact, validateEmail, validateName } from "../utils/validators";
 
@@ -10,6 +11,8 @@ export default function Contact() {
   const [v, setV] = useState({ name: "", email: "", phone: "", message: "" });
   const [submitted, setSubmitted] = useState(false);
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [failed, setFailed] = useState("");
 
   const errors = {
     name: validateName(v.name),
@@ -19,14 +22,25 @@ export default function Contact() {
   const shown = submitted ? errors : {};
   const set = (k) => (e) => setV((x) => ({ ...x, [k]: e.target.value }));
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitted(true);
+    setFailed("");
     if (Object.values(errors).some(Boolean)) return;
-    // No backend yet: keep the message in this browser so it is not lost.
-    const all = readJSON(KEYS.messages, []);
-    writeJSON(KEYS.messages, [{ ...v, id: `M${Date.now()}`, createdAt: new Date().toISOString() }, ...all]);
-    setSent(true);
+    setSending(true);
+    try {
+      const res = await sendContactMessage(v);
+      if (res.stored === "browser") {
+        // Database not available: keep the message in this browser so it is not lost.
+        const all = readJSON(KEYS.messages, []);
+        writeJSON(KEYS.messages, [{ ...v, id: `M${Date.now()}`, createdAt: new Date().toISOString() }, ...all]);
+      }
+      setSent(true);
+    } catch (err) {
+      setFailed("We could not send your message. Please try again.");
+    } finally {
+      setSending(false);
+    }
   };
 
   const field = (k, label, props) => (
@@ -139,7 +153,10 @@ export default function Contact() {
               />
               <p className="field__hint">{v.message.length} of {MAX} max characters.</p>
             </div>
-            <button type="submit" className="btn btn--gold btn--block contact__submit">Submit</button>
+            {failed && <p className="field__error" role="alert">{failed}</p>}
+            <button type="submit" className="btn btn--gold btn--block contact__submit" disabled={sending}>
+              {sending ? "Sending…" : "Submit"}
+            </button>
           </form>
         )}
       </section>

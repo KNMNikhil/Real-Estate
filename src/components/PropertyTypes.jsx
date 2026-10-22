@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import Icon from "./Icon";
-import { getAllProperties } from "../utils/lookup";
+import useProperties from "../utils/useProperties";
 
 // One theme icon per property type.
 const ICONS = {
@@ -15,7 +15,7 @@ const ICONS = {
 const TYPES = ["Plot", "Apartment", "Villa", "Independent House", "Commercial"];
 
 export default function PropertyTypes() {
-  const all = getAllProperties();
+  const { properties: all } = useProperties();
   const rail = useRef(null);
   const [edge, setEdge] = useState({ start: true, end: false });
 

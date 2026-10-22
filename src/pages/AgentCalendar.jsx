@@ -1,13 +1,11 @@
 import { useState } from "react";
-import { useAuth } from "../context/AuthContext";
-import { byDateTime, getAppointmentsForAgent, toISO, todayISO } from "../utils/appointments";
-import { findPropertyById } from "../utils/lookup";
+import { byDateTime, toISO, todayISO } from "../utils/appointments";
+import useAgentAppointments from "../utils/useAgentAppointments";
 
 const WD = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export default function AgentCalendar() {
-  const { agent } = useAuth();
-  const all = getAppointmentsForAgent(agent.id);
+  const { items: all, loading, error } = useAgentAppointments();
   const today = todayISO();
   const [month, setMonth] = useState(() => {
     const n = new Date();
@@ -26,6 +24,8 @@ export default function AgentCalendar() {
   return (
     <div className="cal-page">
       <h1>Calendar</h1>
+      {error && <p className="notice notice--error" role="alert">{error}</p>}
+      {loading && <p className="muted">Loading appointments…</p>}
       <div className="cal-layout">
         <section className="panel cal">
           <div className="cal__head">
@@ -67,7 +67,7 @@ export default function AgentCalendar() {
                   <span>
                     {a.customerName}
                     <em>
-                      {a.kind === "sell" ? "Selling" : "Buying"} · {findPropertyById(a.propertyId)?.name ?? "Property"} · {a.customerContact}{a.customerEmail ? ` · ${a.customerEmail}` : ""}
+                      {a.kind === "sell" ? "Selling" : "Buying"} · {a.propertyName ?? "Property"} · {a.customerContact}{a.customerEmail ? ` · ${a.customerEmail}` : ""}
                     </em>
                   </span>
                   <span className={`status status--${a.status}`}>{a.status}</span>

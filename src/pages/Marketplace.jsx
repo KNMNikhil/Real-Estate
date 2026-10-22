@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import PropertyCard from "../components/PropertyCard";
-import { getAllProperties } from "../utils/lookup";
+import useProperties from "../utils/useProperties";
 import { validatePin } from "../utils/validators";
 
 const TYPES = ["All", "Apartment", "Villa", "Independent House", "Plot", "Commercial"];
@@ -13,7 +13,7 @@ const PRICES = [
 ];
 
 export default function Marketplace() {
-  const all = useMemo(() => getAllProperties(), []);
+  const { properties: all } = useProperties();
   const [params] = useSearchParams();
   const [pin, setPin] = useState(() => (params.get("pin") ?? "").replace(/\D/g, "").slice(0, 6));
   const [type, setType] = useState(() => (TYPES.includes(params.get("type")) ? params.get("type") : "All"));

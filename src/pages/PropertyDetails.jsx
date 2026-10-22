@@ -8,9 +8,10 @@ import Modal from "../components/Modal";
 import SlotConfirmModal from "../components/SlotConfirmModal";
 import StepIndicator from "../components/StepIndicator";
 import TimeStep from "../components/TimeStep";
-import { isSlotTaken, saveBooking } from "../utils/bookings";
+import { SlotTakenError, bookAppointment } from "../lib/api";
 import { formatINR, formatPriceShort } from "../utils/format";
-import { findConsultantById, findPropertyById } from "../utils/lookup";
+import { findConsultantById } from "../utils/lookup";
+import useProperties from "../utils/useProperties";
 import useScrollTop from "../utils/useScrollTop";
 
 const BUY_STEPS = ["Property", "Your details", "Date", "Time", "Confirmed"];
@@ -20,7 +21,8 @@ export default function PropertyDetails() {
   const { propertyId } = useParams();
   const navigate = useNavigate();
 
-  const property = findPropertyById(propertyId);
+  const { properties, loading } = useProperties();
+  const property = properties.find((p) => p.id === propertyId) ?? null;
   const consultant = property ? findConsultantById(property.consultantId) : null;
 
   const [stage, setStage] = useState("details"); // details | info | date | time
@@ -30,8 +32,17 @@ export default function PropertyDetails() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [visitOpen, setVisitOpen] = useState(false);
   const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
 
   useScrollTop(stage);
+
+  if (!property && loading) {
+    return (
+      <div className="narrow site-main">
+        <p className="muted">Loading property…</p>
+      </div>
+    );
+  }
 
   if (!property) {
     return (
@@ -59,25 +70,27 @@ export default function PropertyDetails() {
     ["Locality", `${property.area} - ${property.pincode}`],
   ];
 
-  const handleConfirm = () => {
-    if (isSlotTaken(consultant.id, date, time)) {
+  const handleConfirm = async () => {
+    setSaving(true);
+    try {
+      await bookAppointment({
+        consultantId: consultant.id,
+        kind: "buy",
+        date,
+        time,
+        contact,
+        propertyId: property.id,
+        propertyName: property.name,
+      });
       setConfirmOpen(false);
-      setTime("");
-      setError("That time slot was just taken. Please choose another time.");
-      return;
+      setVisitOpen(true);
+    } catch (e) {
+      setConfirmOpen(false);
+      if (e instanceof SlotTakenError) setTime("");
+      setError(e.message || "Could not book the visit. Please try again.");
+    } finally {
+      setSaving(false);
     }
-    saveBooking({
-      consultantId: consultant.id,
-      date,
-      time,
-      kind: "buy",
-      propertyId: property.id,
-      userContact: contact.phone,
-      userName: contact.name,
-      userEmail: contact.email,
-    });
-    setConfirmOpen(false);
-    setVisitOpen(true);
   };
 
   return (
@@ -176,6 +189,7 @@ export default function PropertyDetails() {
           date={date}
           time={time}
           onConfirm={handleConfirm}
+          busy={saving}
           onChange={() => setConfirmOpen(false)}
         />
       )}

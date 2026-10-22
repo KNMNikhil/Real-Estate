@@ -1,14 +1,18 @@
 import BarChart from "../components/BarChart";
 import { useAuth } from "../context/AuthContext";
-import { byDateTime, getAppointmentsForAgent, toISO, todayISO } from "../utils/appointments";
+import { byDateTime, toISO, todayISO } from "../utils/appointments";
 import { formatPriceShort } from "../utils/format";
-import { findPropertyById } from "../utils/lookup";
+import useAgentAppointments from "../utils/useAgentAppointments";
+import useProperties from "../utils/useProperties";
 
 const DAY = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export default function AgentDashboard() {
   const { agent } = useAuth();
-  const all = getAppointmentsForAgent(agent.id).sort(byDateTime);
+  const { items, loading, error } = useAgentAppointments();
+  const { properties } = useProperties();
+  const priceOf = (id) => properties.find((p) => p.id === id)?.price ?? 0;
+  const all = [...items].sort(byDateTime);
   const today = todayISO();
 
   const done = all.filter((a) => a.status === "completed");
@@ -18,7 +22,7 @@ export default function AgentDashboard() {
   const todays = all.filter((a) => a.date === today);
   const weekEnd = toISO(new Date(Date.now() + 7 * 864e5));
   const thisWeek = all.filter((a) => a.date >= today && a.date <= weekEnd);
-  const value = done.reduce((sum, a) => sum + (findPropertyById(a.propertyId)?.price ?? 0), 0);
+  const value = done.reduce((sum, a) => sum + priceOf(a.propertyId), 0);
 
   // Last 14 days: customers seen per day, split by buying / selling.
   const days = [];
@@ -68,6 +72,9 @@ export default function AgentDashboard() {
         {agent.areaName} · PIN {agent.pincode}
       </p>
 
+      {error && <p className="notice notice--error" role="alert">{error}</p>}
+      {loading && <p className="muted">Loading your appointments…</p>}
+
       <div className="stat-grid stat-grid--wide">
         {stats.map((s) => (
           <div className="stat-card" key={s.label}>
@@ -102,7 +109,7 @@ export default function AgentDashboard() {
                   <strong>{a.time}</strong>
                   <span>
                     {a.customerName}
-                    <em>{a.kind === "sell" ? "Selling" : "Buying"} · {findPropertyById(a.propertyId)?.name ?? "Property"}</em>
+                    <em>{a.kind === "sell" ? "Selling" : "Buying"} · {a.propertyName ?? "Property"}</em>
                   </span>
                 </li>
               ))}

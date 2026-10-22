@@ -1,10 +1,24 @@
+import { useEffect, useState } from "react";
 import { timeSlots } from "../data/dummyData";
-import { getBookedTimes } from "../utils/bookings";
+import { fetchBookedTimes } from "../lib/api";
 import { formatLongDate, formatTime } from "../utils/dates";
 
 // Slot grid for the chosen date; slots already booked for this consultant are disabled.
 export default function TimeStep({ consultantId, date, value, onChange, onNext, onBack }) {
-  const booked = getBookedTimes(consultantId, date);
+  const [booked, setBooked] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let alive = true;
+    setLoading(true);
+    fetchBookedTimes(consultantId, date)
+      .then((times) => alive && setBooked(times ?? []))
+      .catch(() => alive && setBooked([]))
+      .finally(() => alive && setLoading(false));
+    return () => {
+      alive = false;
+    };
+  }, [consultantId, date]);
 
   return (
     <section className="card step-card" aria-labelledby="time-title">
@@ -23,7 +37,7 @@ export default function TimeStep({ consultantId, date, value, onChange, onNext, 
               key={slot}
               type="button"
               className={`slot ${selected ? "is-selected" : ""}`}
-              disabled={taken}
+              disabled={taken || loading}
               aria-pressed={selected}
               onClick={() => onChange(slot)}
             >

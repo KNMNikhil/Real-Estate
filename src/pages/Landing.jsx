@@ -2,14 +2,14 @@ import { Link, useNavigate } from "react-router-dom";
 import Icon from "../components/Icon";
 import PropertyCard from "../components/PropertyCard";
 import PropertyTypes from "../components/PropertyTypes";
-import { getAllProperties } from "../utils/lookup";
+import useProperties from "../utils/useProperties";
 
 const SERVICE_INFO = [
   { title: "Buying of Property", text: "Browse verified properties in your area and book a visit with your consultant.", icon: "svcBuy", cta: { to: "/marketplace", label: "Buy a property" } },
   { title: "Selling of Property", text: "Meet your area consultant and list your property with complete transparency.", icon: "svcSell", cta: { to: "/sell", label: "Sell a property" } },
   { title: "Property Management", text: "Collection of rent out and building maintenance, handled for you.", icon: "svcManage" },
   { title: "Layout Approval", text: "Guidance and support through layout approvals from start to finish.", icon: "svcLayout" },
-  { title: "Plots Promotions", text: "Reach genuine buyers with focused promotion of your plots.", icon: "svcPlots" },
+  { title: "Promotions", text: "Reach genuine buyers with focused promotion of your plots.", icon: "svcPlots" },
 ];
 
 const TESTIMONIALS = [
@@ -43,7 +43,8 @@ const FAQS = [
 
 export default function Landing() {
   const navigate = useNavigate();
-  const all = getAllProperties().sort((x, y) => new Date(y.uploadedAt) - new Date(x.uploadedAt));
+  const { properties } = useProperties();
+  const all = [...properties].sort((x, y) => new Date(y.uploadedAt) - new Date(x.uploadedAt));
   const featured = all.slice(0, 6);
 
   return (
@@ -78,7 +79,12 @@ export default function Landing() {
               </p>
               <div className="about__maxim-block">
                 <p className="about__intro">We believe in the maxim,</p>
-                <blockquote className="about__quote">&lsquo;Action speaks louder than words.&rsquo;</blockquote>
+                <blockquote className="about__quote">
+                  <span className="about__quote-mark" aria-hidden="true">&ldquo;</span>
+                  <p>
+                    Action speaks <mark>louder than words.</mark>
+                  </p>
+                </blockquote>
                 <p className="about__outro">Our deeds will speak, of course, with smiling face, respect, and honour.</p>
               </div>
               <ul className="about__tags">
@@ -92,7 +98,7 @@ export default function Landing() {
 
         <section id="consultants" className="lp-section" aria-labelledby="consultants-heading">
           <div className="consult">
-            <h2 id="consultants-heading" className="consult__title">Our Living Gods Consultants</h2>
+            <h2 id="consultants-heading" className="consult__title">Living Gods Consultants</h2>
             <p className="consult__tag">Guided by faith, grounded in service</p>
             <p>
               They are compulsorily associated with any of the spiritual organizations like{" "}

@@ -18,6 +18,14 @@ const getSubmittedProperties = () => readJSON(KEYS.properties, []);
 export const getAllProperties = () =>
   [...getSubmittedProperties(), ...properties, ...moreProperties].map(withPhoto);
 
+// Database listings first, then this browser's fallback listings, then the samples.
+export const mergeListings = (dbList) => {
+  const seen = new Set();
+  return [...dbList, ...getSubmittedProperties(), ...properties, ...moreProperties]
+    .filter((p) => !seen.has(p.id) && seen.add(p.id))
+    .map(withPhoto);
+};
+
 export const findPropertyById = (id) =>
   getAllProperties().find((p) => p.id === id) ?? null;
 

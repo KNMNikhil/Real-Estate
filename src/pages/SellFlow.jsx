@@ -10,9 +10,9 @@ import SlotConfirmModal from "../components/SlotConfirmModal";
 import StepIndicator from "../components/StepIndicator";
 import TimeStep from "../components/TimeStep";
 import { mouText } from "../data/dummyData";
-import { isSlotTaken, saveBooking } from "../utils/bookings";
+import { SlotTakenError, bookAppointment } from "../lib/api";
 import { formatLongDate, formatTime } from "../utils/dates";
-import { findConsultantByPin, saveSubmittedProperty } from "../utils/lookup";
+import { findConsultantByPin } from "../utils/lookup";
 import useScrollTop from "../utils/useScrollTop";
 
 const STEPS = ["Your details", "Area", "Agent", "Date", "Time", "Agreement", "Property"];
@@ -58,15 +58,9 @@ export default function SellFlow() {
     }
   };
 
-  const handleSubmit = (values, media) => {
-    // Another booking may have taken the slot while the form was open.
-    if (isSlotTaken(consultant.id, date, time)) {
-      setFormError("That time slot was just taken. Please choose another time.");
-      setTime("");
-      setStep(5);
-      return;
-    }
+  const handleSubmit = async (values, media) => {
     setSubmitting(true);
+    setFormError("");
 
     const floor = values.type === "Plot" ? "N/A" : `${values.floor.trim()} of ${values.totalFloors}`;
     const hasRooms = values.type !== "Plot";
@@ -90,27 +84,30 @@ export default function SellFlow() {
       owner: { name: contact.name, contact: contact.phone, email: contact.email },
     };
 
-    const result = saveSubmittedProperty(property);
-    if (!result.ok) {
+    try {
+      const result = await bookAppointment({
+        consultantId: consultant.id,
+        kind: "sell",
+        date,
+        time,
+        contact,
+        property,
+      });
+      setSaveNote(
+        result.photosDropped ? "Your photos were too large to store in this demo, so the listing was saved without them." : ""
+      );
+      setSuccessOpen(true);
+    } catch (e) {
+      if (e instanceof SlotTakenError) {
+        setFormError(e.message);
+        setTime("");
+        setStep(5);
+      } else {
+        setFormError(e.message || "Could not save the property. Please try again.");
+      }
+    } finally {
       setSubmitting(false);
-      setFormError("Could not save the property (browser storage is full). Try removing some photos.");
-      return;
     }
-    saveBooking({
-      consultantId: consultant.id,
-      date,
-      time,
-      kind: "sell",
-      propertyId: property.id,
-      userContact: contact.phone,
-      userName: contact.name,
-      userEmail: contact.email,
-    });
-    setSaveNote(
-      result.photosDropped ? "Your photos were too large to store in this demo, so the listing was saved without them." : ""
-    );
-    setFormError("");
-    setSuccessOpen(true);
   };
 
   const [tipTitle, tipList] = TIPS[step];
