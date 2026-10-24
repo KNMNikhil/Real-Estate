@@ -18,9 +18,9 @@ export default function Footer() {
         </div>
         <nav className="site-footer__links" aria-label="Footer">
           <Link to="/">Home</Link>
-          <Link to="/marketplace">Buy</Link>
-          <Link to="/sell">Sell</Link>
           <Link to="/about">About us</Link>
+          <Link to="/buy">Buy</Link>
+          <Link to="/sell">Sell</Link>
           <Link to="/contact">Contact us</Link>
           <Link to="/consultant/login">Consultant login</Link>
         </nav>

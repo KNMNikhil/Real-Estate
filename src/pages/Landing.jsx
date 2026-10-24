@@ -1,11 +1,9 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Icon from "../components/Icon";
-import PropertyCard from "../components/PropertyCard";
 import PropertyTypes from "../components/PropertyTypes";
-import useProperties from "../utils/useProperties";
 
 const SERVICE_INFO = [
-  { title: "Buying of Property", text: "Browse verified properties in your area and book a visit with your consultant.", icon: "svcBuy", cta: { to: "/marketplace", label: "Buy a property" } },
+  { title: "Buying of Property", text: "Tell us the area you want and your consultant will help you find the right property.", icon: "svcBuy", cta: { to: "/buy", label: "Buy a property" } },
   { title: "Selling of Property", text: "Meet your area consultant and list your property with complete transparency.", icon: "svcSell", cta: { to: "/sell", label: "Sell a property" } },
   { title: "Property Management", text: "Collection of rent out and building maintenance, handled for you.", icon: "svcManage" },
   { title: "Layout Approval", text: "Guidance and support through layout approvals from start to finish.", icon: "svcLayout" },
@@ -34,18 +32,14 @@ const TESTIMONIALS = [
 ];
 
 const FAQS = [
-  { q: "How do I get started?", a: "No account needed. Open the Marketplace to buy a property, or use Sell a property from the Services section. We only ask for your name, email and phone number when you book." },
+  { q: "How do I get started?", a: "No account needed. Use Buy or Sell in the menu. We only ask for your name, email and phone number when you book." },
   { q: "Who are the Living Gods Consultants?", a: "Consultants associated with spiritual organizations that focus on the divine jyoti. Each serves a specific area and is your point of contact." },
-  { q: "How do I book a property visit?", a: "Open a property from the Marketplace, pick a date and time slot, and confirm. Your consultant will meet you there." },
-  { q: "Can I sell my property through you?", a: "Yes. Choose Sell a property under Services, meet your area consultant and share your property details and photos." },
+  { q: "How do I book a property visit?", a: "Choose Buy, enter your details and area PIN code, pick a date and accept the agreement. Your consultant will contact you shortly." },
+  { q: "Can I sell my property through you?", a: "Yes. Choose Sell, enter your details and area PIN code, pick a date and accept the agreement. Your consultant will contact you shortly." },
   { q: "Do you help with layout approvals and plot promotions?", a: "Yes. We guide you through layout approvals and promote plots to genuine buyers." },
 ];
 
 export default function Landing() {
-  const navigate = useNavigate();
-  const { properties } = useProperties();
-  const all = [...properties].sort((x, y) => new Date(y.uploadedAt) - new Date(x.uploadedAt));
-  const featured = all.slice(0, 6);
 
   return (
     <>
@@ -57,9 +51,6 @@ export default function Landing() {
             Highly transparent real estate service. Buy, sell and manage property with consultants
             you can trust.
           </p>
-          <button type="button" className="btn btn--gold btn--pill btn--hero" onClick={() => navigate("/marketplace")}>
-            Marketplace
-          </button>
         </div>
         <div className="hero__media">
           <img src="/hero.png" alt="" />
@@ -119,23 +110,6 @@ export default function Landing() {
       <PropertyTypes />
 
       <main className="lp">
-        <section id="featured" className="lp-section" aria-labelledby="featured-heading">
-          <span className="lp-eyebrow">Featured properties</span>
-          <h2 id="featured-heading" className="lp-title">Properties available to buy</h2>
-          <ul className="market__grid featured__grid">
-            {featured.map((p) => (
-              <li key={p.id}>
-                <PropertyCard property={p} />
-              </li>
-            ))}
-          </ul>
-          <div className="featured__cta">
-            <Link to="/marketplace" className="btn btn--gold btn--pill btn--hero">
-              View all properties
-            </Link>
-          </div>
-        </section>
-
         <section id="services" className="lp-section" aria-labelledby="services-heading">
           <span className="lp-eyebrow">Services</span>
           <h2 id="services-heading" className="lp-title">Everything about property</h2>

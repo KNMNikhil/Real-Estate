@@ -1,65 +1,27 @@
-import BarChart from "../components/BarChart";
+import AppointmentItem from "../components/AppointmentItem";
 import { useAuth } from "../context/AuthContext";
-import { byDateTime, toISO, todayISO } from "../utils/appointments";
-import { formatPriceShort } from "../utils/format";
+import { byDateTime, todayISO } from "../utils/appointments";
+import { formatLongDate } from "../utils/dates";
 import useAgentAppointments from "../utils/useAgentAppointments";
-import useProperties from "../utils/useProperties";
-
-const DAY = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+import useContacted from "../utils/useContacted";
 
 export default function AgentDashboard() {
   const { agent } = useAuth();
   const { items, loading, error } = useAgentAppointments();
-  const { properties } = useProperties();
-  const priceOf = (id) => properties.find((p) => p.id === id)?.price ?? 0;
-  const all = [...items].sort(byDateTime);
+  const { done, toggle } = useContacted();
   const today = todayISO();
 
-  const done = all.filter((a) => a.status === "completed");
-  const sold = done.filter((a) => a.kind === "sell");
-  const bought = done.filter((a) => a.kind === "buy");
-  const customers = new Set(all.map((a) => a.customerContact));
-  const todays = all.filter((a) => a.date === today);
-  const weekEnd = toISO(new Date(Date.now() + 7 * 864e5));
-  const thisWeek = all.filter((a) => a.date >= today && a.date <= weekEnd);
-  const value = done.reduce((sum, a) => sum + priceOf(a.propertyId), 0);
-
-  // Last 14 days: customers seen per day, split by buying / selling.
-  const days = [];
-  for (let i = 13; i >= 0; i -= 1) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    const iso = toISO(d);
-    const items = all.filter((a) => a.date === iso);
-    days.push({
-      label: `${d.getDate()}`,
-      sub: DAY[d.getDay()],
-      buy: items.filter((a) => a.kind === "buy").length,
-      sell: items.filter((a) => a.kind === "sell").length,
-      total: items.length,
-      iso,
-    });
-  }
-  const busiest = days.reduce((best, d) => (d.total > best.total ? d : best), days[0]);
-
-  // Weekday pattern across all history.
-  const byWeekday = DAY.map((label, idx) => ({
-    label,
-    buy: done.filter((a) => new Date(a.date).getDay() === idx && a.kind === "buy").length,
-    sell: done.filter((a) => new Date(a.date).getDay() === idx && a.kind === "sell").length,
-  }));
+  // Everyone who has booked with this consultant. Not-yet-done first (soonest date first),
+  // finished ones below.
+  const sorted = [...items].sort(byDateTime);
+  const pending = sorted.filter((a) => !done.has(a.id));
+  const finished = sorted.filter((a) => done.has(a.id));
+  const todayCount = pending.filter((a) => a.date === today).length;
 
   const stats = [
-    { icon: "☺", label: "Total Customers", value: customers.size },
-    { icon: "▤", label: "Appointments Today", value: todays.length },
-    { icon: "⌂", label: "Properties Bought", value: bought.length },
-    { icon: "₹", label: "Properties Sold", value: sold.length },
-    { icon: "☰", label: "Next 7 Days", value: thisWeek.length },
-    { icon: "◈", label: "Deal Value", value: `₹${formatPriceShort(value) || 0}`, small: true },
-  ];
-  const series = [
-    { key: "buy", label: "Buying", className: "is-blue" },
-    { key: "sell", label: "Selling", className: "is-gold" },
+    { label: "Today's appointments", value: sorted.filter((a) => a.date === today).length },
+    { label: "Still to call", value: pending.length },
+    { label: "Done", value: finished.length },
   ];
 
   return (
@@ -69,56 +31,53 @@ export default function AgentDashboard() {
         <span className="auth-badge">Consultant</span>
       </div>
       <p className="muted">
-        {agent.areaName} · PIN {agent.pincode}
+        {agent.areaName} · PIN {agent.pincode} · {formatLongDate(today)}
       </p>
 
       {error && <p className="notice notice--error" role="alert">{error}</p>}
       {loading && <p className="muted">Loading your appointments…</p>}
 
-      <div className="stat-grid stat-grid--wide">
+      <div className="stat-grid stat-grid--three">
         {stats.map((s) => (
           <div className="stat-card" key={s.label}>
-            <span className="stat-card__icon" aria-hidden="true">{s.icon}</span>
-            <span className={`stat-card__value ${s.small ? "is-small" : ""}`}>{s.value}</span>
+            <span className="stat-card__value">{s.value}</span>
             <span className="stat-card__label">{s.label}</span>
           </div>
         ))}
       </div>
 
       <section className="panel">
-        <h2>Customers per day, last 14 days</h2>
-        <BarChart data={days} series={series} />
-        <p className="muted chart__note">
-          {busiest.total > 0
-            ? `Busiest day: ${busiest.sub} ${busiest.iso.slice(5)} with ${busiest.total} customers.`
-            : "No appointments in the last 14 days yet."}
-        </p>
-      </section>
+        <h2>To-do list</h2>
+        <p className="muted">Call each person, then tick them as done.</p>
+        {!loading && sorted.length === 0 && <p className="notice">No one has booked with you yet.</p>}
 
-      <div className="dash-two">
-        <section className="panel">
-          <h2>Deals by weekday</h2>
-          <BarChart data={byWeekday} series={series} height={130} />
-        </section>
-        <section className="panel">
-          <h2>Today&rsquo;s appointments</h2>
-          {todays.length === 0 ? (
-            <p className="notice">No appointments today.</p>
-          ) : (
-            <ul className="agenda">
-              {todays.map((a) => (
-                <li key={a.id}>
-                  <strong>{a.time}</strong>
-                  <span>
-                    {a.customerName}
-                    <em>{a.kind === "sell" ? "Selling" : "Buying"} · {a.propertyName ?? "Property"}</em>
-                  </span>
-                </li>
+        {pending.length > 0 && (
+          <>
+            <p className="todo__count">
+              {pending.length} to call{todayCount > 0 ? ` · ${todayCount} due today` : ""}
+            </p>
+            <ul className="todo-list">
+              {pending.map((a) => (
+                <AppointmentItem key={a.id} item={a} done={false} onToggle={toggle} showDate />
               ))}
             </ul>
-          )}
-        </section>
-      </div>
+          </>
+        )}
+        {sorted.length > 0 && pending.length === 0 && (
+          <p className="notice">All done. You have spoken to everyone.</p>
+        )}
+
+        {finished.length > 0 && (
+          <>
+            <h3 className="todo__section">Done</h3>
+            <ul className="todo-list">
+              {finished.map((a) => (
+                <AppointmentItem key={a.id} item={a} done onToggle={toggle} showDate />
+              ))}
+            </ul>
+          </>
+        )}
+      </section>
     </div>
   );
 }
