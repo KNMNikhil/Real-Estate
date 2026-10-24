@@ -13,7 +13,14 @@ export default function AgentDashboard() {
 
   // Everyone who has booked with this consultant. Not-yet-done first (soonest date first),
   // finished ones below.
-  const sorted = [...items].sort(byDateTime);
+  // A person is listed once per kind of request (buying / selling), even if they enquired twice.
+  const seen = new Set();
+  const sorted = [...items].sort(byDateTime).filter((a) => {
+    const key = `${a.customerContact}:${a.kind}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
   const pending = sorted.filter((a) => !done.has(a.id));
   const finished = sorted.filter((a) => done.has(a.id));
   const todayCount = pending.filter((a) => a.date === today).length;
