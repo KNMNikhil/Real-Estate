@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   formatLongDate,
   formatMonthYear,
@@ -10,12 +10,21 @@ import {
 const WEEKDAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
 // "Book your slot" - month calendar with month navigation. Today and the past are disabled.
-export default function DateStep({ value, onChange, onNext, onBack }) {
+const NONE = new Set();
+
+// blocked: Set of ISO dates already booked with this consultant (shown crossed out).
+// onMonthChange({ y, m }) lets the parent load blocked dates for the visible month.
+export default function DateStep({ value, onChange, onNext, onBack, blocked = NONE, onMonthChange }) {
   const now = new Date();
   const [view, setView] = useState({ y: now.getFullYear(), m: now.getMonth() });
   const today = todayISO();
   const weeks = getMonthMatrix(view.y, view.m);
   const isCurrentMonth = view.y === now.getFullYear() && view.m === now.getMonth();
+
+  useEffect(() => {
+    onMonthChange?.(view);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [view.y, view.m]);
 
   const atCurrentMonth = isCurrentMonth;
   const shiftMonth = (delta) =>
@@ -58,7 +67,8 @@ export default function DateStep({ value, onChange, onNext, onBack }) {
           ))}
           {weeks.flat().map((iso, i) => {
             if (!iso) return <div key={`blank-${i}`} className="calendar__blank" />;
-            const disabled = !isBookableDate(iso);
+            const booked = blocked.has(iso);
+            const disabled = !isBookableDate(iso) || booked;
             const selected = iso === value;
             return (
               <button
@@ -66,10 +76,11 @@ export default function DateStep({ value, onChange, onNext, onBack }) {
                 type="button"
                 className={`calendar__day ${selected ? "is-selected" : ""} ${
                   iso === today ? "is-today" : ""
-                }`}
+                } ${booked ? "is-booked" : ""}`}
                 disabled={disabled}
                 aria-pressed={selected}
-                aria-label={formatLongDate(iso)}
+                aria-label={booked ? `${formatLongDate(iso)}, already booked` : formatLongDate(iso)}
+                title={booked ? "Already booked. Please pick another date." : undefined}
                 onClick={() => onChange(iso)}
               >
                 {Number(iso.slice(8))}
@@ -78,6 +89,8 @@ export default function DateStep({ value, onChange, onNext, onBack }) {
           })}
         </div>
       </div>
+
+      <p className="muted calendar__legend">Crossed-out dates are not available. Dates already booked with your consultant are shown in red.</p>
 
       {value && (
         <p className="selection-note">

@@ -4569,3 +4569,166 @@ a.contact__value:hover {
     font-size: 0.65rem;
   }
 }
+
+/* ===== Property types: cards centred; arrows only appear when needed ===== */
+@media (min-width: 761px) {
+  .ptypes__rail {
+    justify-content: safe center;
+  }
+  .ptypes__rail li {
+    flex: 0 1 216px;
+    min-width: 150px;
+  }
+}
+
+/* ===== Consultant to-do list ===== */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.todo-list {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+.todo__count {
+  font-weight: 600;
+  margin: 12px 0 0;
+}
+.todo {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 18px;
+  border: 1px solid #e6e1d6;
+  border-left: 5px solid #d89a2b;
+  border-radius: 16px;
+  background: #fff;
+}
+.todo.is-done {
+  border-left-color: #2f9e6b;
+  background: #f4faf6;
+}
+.todo.is-done .todo__name,
+.todo.is-done .todo__phone {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+.todo__tick input {
+  width: 28px;
+  height: 28px;
+  margin-top: 2px;
+  accent-color: #2f9e6b;
+  cursor: pointer;
+}
+.todo__body {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+.todo__top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.todo__name {
+  font-size: 1.15rem;
+}
+.todo__kind {
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #fdf0d8;
+  color: #9a5f0c;
+}
+.todo__kind--buy {
+  background: #e4edff;
+  color: #2a4fa8;
+}
+.todo__phone {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #14161f;
+  text-decoration: none;
+}
+.todo__phone:hover {
+  text-decoration: underline;
+}
+.todo__email {
+  color: #3d4256;
+  overflow-wrap: anywhere;
+}
+.todo__meta {
+  color: #6b7085;
+  font-size: 0.9rem;
+}
+.todo__state {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #9a5f0c;
+  white-space: nowrap;
+}
+.todo.is-done .todo__state {
+  color: #2f9e6b;
+}
+
+/* Calendar days that have visits stand out clearly */
+.cal__day.has-visit {
+  background: #fdecc8;
+  border: 2px solid #d89a2b;
+  font-weight: 800;
+  color: #6b4306;
+}
+.cal__day.has-visit.is-selected {
+  background: #d89a2b;
+  color: #fff;
+}
+.cal__day.has-visit .cal__badge {
+  background: #b9741f;
+  color: #fff;
+  font-weight: 700;
+}
+.todo.is-reminder {
+  border-left-color: #2a4fa8;
+}
+.stat-grid--three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+@media (max-width: 760px) {
+  .stat-grid--three {
+    grid-template-columns: 1fr;
+  }
+}
+.todo__section {
+  margin: 28px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid #e6e1d6;
+}
+
+/* Dates already booked with the consultant */
+.calendar__day.is-booked:disabled {
+  background: #fde8e6;
+  color: #b3261e;
+  text-decoration: line-through;
+}
+.calendar__legend {
+  font-size: 0.85rem;
+  margin: 12px 0 0;
+}
+
+/* Done to-do items are no longer struck through */
+.todo.is-done .todo__name,
+.todo.is-done .todo__phone {
+  text-decoration: none;
+  opacity: 1;
+}

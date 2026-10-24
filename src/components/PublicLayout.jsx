@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import Footer from "./Footer";
 import Logo from "./Logo";
 
 // Shared shell for every public page: glass navbar on top, footer at the bottom.
 export default function PublicLayout() {
-  const navigate = useNavigate();
   const { pathname, hash, key } = useLocation();
   const [atHero, setAtHero] = useState(true);
   const [inAbout, setInAbout] = useState(false);
@@ -60,15 +59,11 @@ export default function PublicLayout() {
               About us
             </Link>
           </li>
-          <li><Link to="/marketplace">Buy</Link></li>
+          <li><NavLink to="/buy">Buy</NavLink></li>
           <li><NavLink to="/sell">Sell</NavLink></li>
-          <li><NavLink to="/marketplace" end>All properties</NavLink></li>
           <li><NavLink to="/contact">Contact us</NavLink></li>
         </ul>
         <div className="landing__actions">
-          <button type="button" className="btn btn--gold btn--pill" onClick={() => navigate("/marketplace")}>
-            Marketplace
-          </button>
           <button
             type="button"
             className="landing__burger"
@@ -86,9 +81,8 @@ export default function PublicLayout() {
             <Link to="/" onClick={goHome}>Home</Link>
           </li>
           <li><Link to="/#about">About us</Link></li>
-          <li><Link to="/marketplace">Buy</Link></li>
+          <li><Link to="/buy">Buy</Link></li>
           <li><Link to="/sell">Sell</Link></li>
-          <li><Link to="/marketplace">All properties</Link></li>
           <li><Link to="/contact">Contact us</Link></li>
         </ul>
       </nav>

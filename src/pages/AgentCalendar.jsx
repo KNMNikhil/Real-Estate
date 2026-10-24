@@ -1,4 +1,5 @@
 import { useState } from "react";
+import AppointmentItem from "../components/AppointmentItem";
 import { byDateTime, toISO, todayISO } from "../utils/appointments";
 import useAgentAppointments from "../utils/useAgentAppointments";
 
@@ -24,6 +25,7 @@ export default function AgentCalendar() {
   return (
     <div className="cal-page">
       <h1>Calendar</h1>
+      <p className="muted">Reminders of who is booked on each day. Tick them off from the Dashboard.</p>
       {error && <p className="notice notice--error" role="alert">{error}</p>}
       {loading && <p className="muted">Loading appointments…</p>}
       <div className="cal-layout">
@@ -44,7 +46,8 @@ export default function AgentCalendar() {
                 <button
                   key={d}
                   type="button"
-                  className={`cal__day ${iso(d) === today ? "is-today" : ""} ${iso(d) === selected ? "is-selected" : ""}`}
+                  className={`cal__day ${iso(d) === today ? "is-today" : ""} ${iso(d) === selected ? "is-selected" : ""} ${on(iso(d)).length > 0 ? "has-visit" : ""}`}
+                  aria-label={`${d}${on(iso(d)).length ? `, ${on(iso(d)).length} visit${on(iso(d)).length > 1 ? "s" : ""}` : ""}`}
                   onClick={() => setSelected(iso(d))}
                 >
                   {d}
@@ -56,22 +59,13 @@ export default function AgentCalendar() {
         </section>
 
         <section className="panel">
-          <h2>{new Date(selected).toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" })}</h2>
+          <h2>{new Date(`${selected}T00:00:00`).toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" })}</h2>
           {day.length === 0 ? (
             <p className="notice">No appointments on this day.</p>
           ) : (
-            <ul className="agenda">
+            <ul className="todo-list">
               {day.map((a) => (
-                <li key={a.id}>
-                  <strong>{a.time}</strong>
-                  <span>
-                    {a.customerName}
-                    <em>
-                      {a.kind === "sell" ? "Selling" : "Buying"} · {a.propertyName ?? "Property"} · {a.customerContact}{a.customerEmail ? ` · ${a.customerEmail}` : ""}
-                    </em>
-                  </span>
-                  <span className={`status status--${a.status}`}>{a.status}</span>
-                </li>
+                <AppointmentItem key={a.id} item={a} readOnly />
               ))}
             </ul>
           )}
