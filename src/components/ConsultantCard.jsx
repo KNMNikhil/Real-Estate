@@ -21,6 +21,12 @@ export default function ConsultantCard({ consultant, title }) {
             <dt>Contact</dt>
             <dd>
               <a href={`tel:+91${consultant.contact}`}>{consultant.contact}</a>
+              {consultant.altContact && (
+                <>
+                  {" / "}
+                  <a href={`tel:+91${consultant.altContact}`}>{consultant.altContact}</a>
+                </>
+              )}
             </dd>
           </div>
           <div>

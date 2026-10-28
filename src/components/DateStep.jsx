@@ -14,7 +14,7 @@ const NONE = new Set();
 
 // blocked: Set of ISO dates already booked with this consultant (shown crossed out).
 // onMonthChange({ y, m }) lets the parent load blocked dates for the visible month.
-export default function DateStep({ value, onChange, onNext, onBack, blocked = NONE, onMonthChange }) {
+export default function DateStep({ value, onChange, onNext, onBack, blocked = NONE, onMonthChange, submitting = false }) {
   const now = new Date();
   const [view, setView] = useState({ y: now.getFullYear(), m: now.getMonth() });
   const today = todayISO();
@@ -102,8 +102,8 @@ export default function DateStep({ value, onChange, onNext, onBack, blocked = NO
         <button type="button" className="btn btn--ghost" onClick={onBack}>
           Back
         </button>
-        <button type="button" className="btn btn--primary" disabled={!value} onClick={onNext}>
-          Next
+        <button type="button" className="btn btn--primary" disabled={!value || submitting} onClick={onNext}>
+          {submitting ? "Confirming…" : "Confirm date"}
         </button>
       </div>
     </section>

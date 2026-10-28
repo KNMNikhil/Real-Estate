@@ -46,6 +46,17 @@ export const consultants = [
     address: "45, East Coast Road, Thiruvanmiyur, Chennai - 600041",
     photo: "https://i.pravatar.cc/300?img=47",
   },
+  {
+    // Chief consultant, Tamil Nadu region. contact number shown to customers.
+    id: "C005",
+    name: "PAFP Neethi",
+    pincode: "631051",
+    areaName: "Manjampadi",
+    contact: "9842393898",
+    altContact: "8754913898", // second number, also shown to customers
+    address: "1/128, Pillaiyar Kovil Street, Manjampadi, Attupakkam, Vellore, Tamil Nadu - 631051",
+    photo: "/consultants/neethi.webp",
+  },
 ];
 
 export const properties = [
@@ -197,13 +208,14 @@ export const timeSlots = [
 
 export const mouText = `[MOU content to be provided by the client.]
 
-This is a placeholder for the Memorandum of Understanding between Living Gods Real Estates (a unit of McCoy Engineering Private Limited) and the user.`;
+This is a placeholder for the Memorandum of Understanding between Living Gods Real Estates (a Unit of McCoy Engineering Private Limited) and the user.`;
 
 // Valid PIN test cases:
 // 600089 -> consultant C001 + 2 properties
 // 600001 -> consultant C002 + 1 property
 // 600020 -> consultant C003 + 1 property
 // 600041 -> consultant C004 + 1 property
+// 631051 -> consultant C005 (chief consultant, Manjampadi, Vellore)
 // 600999 -> valid format, no consultant ("No consultant available")
 // 012345 -> invalid (cannot start with 0)
 // 12345  -> invalid (must be 6 digits)
