@@ -1,4 +1,3 @@
-import DemoBanner from "../components/DemoBanner";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Modal from "../components/Modal";
@@ -13,7 +12,7 @@ import {
 } from "../lib/admin";
 import { initials } from "../utils/format";
 import useAdminData, { agentStats } from "../utils/useAdminData";
-import { validateContact, validateName, validatePin } from "../utils/validators";
+import { validateContact, validateEmail, validateName, validatePin } from "../utils/validators";
 
 const EMPTY = { name: "", pincode: "", areaName: "", contact: "", email: "", address: "", photo: "", password: "" };
 const ALPHABET = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -56,7 +55,7 @@ export default function AdminAgents() {
       areaName: form.areaName.trim().length < 2 ? "Please enter the area name." : "",
       contact: validateContact(form.contact),
       password: form.password.length < 8 ? "The password must be at least 8 characters." : "",
-      email: form.email && !/^[^@\s]+@[^@\s]+\.[^@\s][^@\s]+$/.test(form.email) ? "Please enter a valid email." : "",
+      email: form.email ? validateEmail(form.email) : "",
     };
     setErrors(er);
     return !Object.values(er).some(Boolean);
@@ -137,21 +136,20 @@ export default function AdminAgents() {
   return (
     <div className="dash-home">
       <div className="title-row">
-        <h1>Agents</h1>
+        <h1>Consultants</h1>
         <button type="button" className="btn btn--gold btn--pill" onClick={() => setOpen((o) => !o)}>
-          {open ? "Close" : "+ Add agent"}
+          {open ? "Close" : "+ Add consultant"}
         </button>
       </div>
-      <p className="muted">Add or remove agents. The details you enter are the ones customers see on the website.</p>
-      <DemoBanner />
+      <p className="muted">Add or remove consultants. The details you enter are the ones customers see on the website.</p>
 
       {error && <p className="notice notice--error" role="alert">{error}</p>}
       {actionError && <p className="notice notice--error" role="alert">{actionError}</p>}
 
       {created && (
         <section className="panel panel--ok" role="status">
-          <h2>{created.reset ? "New password set" : "Agent added"}: {created.name}</h2>
-          <p>Give these login details to the agent. The password is not shown again.</p>
+          <h2>{created.reset ? "New password set" : "Consultant added"}: {created.name}</h2>
+          <p>Give these login details to the consultant. The password is not shown again.</p>
           <dl className="creds">
             <div><dt>Login (contact number)</dt><dd>{created.contact}</dd></div>
             <div><dt>Password</dt><dd><code>{created.password}</code></dd></div>
@@ -165,10 +163,10 @@ export default function AdminAgents() {
 
       {open && (
         <section className="panel">
-          <h2>Add a new agent</h2>
+          <h2>Add a new consultant</h2>
           <form onSubmit={add} noValidate>
             <div className="form-grid">
-              {field("name", "Agent name", { autoComplete: "off" })}
+              {field("name", "Consultant name", { autoComplete: "off" })}
               {field("pincode", "Area PIN code", { inputMode: "numeric", maxLength: 6 })}
               {field("areaName", "Area name")}
               {field("contact", "Contact number (also the login)", { type: "tel", inputMode: "numeric", maxLength: 10 })}
@@ -179,7 +177,7 @@ export default function AdminAgents() {
                 <textarea id="ag-address" className="input" rows={2} value={form.address} onChange={set("address")} />
               </div>
               <div className="field field--wide">
-                <label htmlFor="ag-password" className="field__label">Password for the agent</label>
+                <label htmlFor="ag-password" className="field__label">Password for the consultant</label>
                 <div className="pw-gen">
                   <input
                     id="ag-password"
@@ -197,14 +195,14 @@ export default function AdminAgents() {
             </div>
             {formError && <p className="notice notice--error" role="alert">{formError}</p>}
             <div className="actions actions--end">
-              <button type="submit" className="btn btn--primary" disabled={busy}>{busy ? "Saving…" : "Add agent"}</button>
+              <button type="submit" className="btn btn--primary" disabled={busy}>{busy ? "Saving…" : "Add consultant"}</button>
             </div>
           </form>
         </section>
       )}
 
-      {loading && <p className="muted">Loading agents…</p>}
-      {!loading && agents.length === 0 && !error && <p className="notice">No agents yet.</p>}
+      {loading && <p className="muted">Loading consultants…</p>}
+      {!loading && agents.length === 0 && !error && <p className="notice">No consultants yet.</p>}
 
       <ul className="agent-list">
         {agents.map((a) => {
@@ -243,13 +241,13 @@ export default function AdminAgents() {
             <>
               <button type="button" className="btn btn--ghost" onClick={() => setToDelete(null)}>Cancel</button>
               <button type="button" className="btn btn--danger" onClick={confirmDelete} disabled={busy}>
-                {busy ? "Deleting…" : "Delete agent"}
+                {busy ? "Deleting…" : "Delete consultant"}
               </button>
             </>
           }
         >
           <p>
-            This removes the agent from the website and deletes their {agentStats(toDelete.id, deals).total} booking(s).
+            This removes the consultant from the website and deletes their {agentStats(toDelete.id, deals).total} booking(s).
             It cannot be undone.
           </p>
         </Modal>
@@ -268,7 +266,7 @@ export default function AdminAgents() {
             </>
           }
         >
-          <p className="muted">The agent is signed out everywhere and must use this password next time.</p>
+          <p className="muted">The consultant is signed out everywhere and must use this password next time.</p>
           <div className="pw-gen">
             <input className="input" value={newPw} onChange={(e) => { setNewPw(e.target.value); setPwError(""); }} aria-label="New password" />
             <button type="button" className="btn btn--outline" onClick={() => setNewPw(makePassword())}>Generate</button>

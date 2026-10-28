@@ -1,8 +1,9 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import Icon from "./Icon";
 import { sendContactMessage } from "../lib/api";
 import { KEYS, readJSON, writeJSON } from "../utils/storage";
-import { validateContact, validateEmail, validateName } from "../utils/validators";
+import { cleanPhone, validateContact, validateEmail, validateName } from "../utils/validators";
 
 const MAX = 150;
 
@@ -19,7 +20,7 @@ export default function ContactMessageCard() {
     phone: validateContact(v.phone),
   };
   const shown = submitted ? errors : {};
-  const set = (k) => (e) => setV((x) => ({ ...x, [k]: e.target.value }));
+  const set = (k) => (e) => setV((x) => ({ ...x, [k]: k === "phone" ? cleanPhone(e.target.value) : e.target.value }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -95,7 +96,6 @@ export default function ContactMessageCard() {
             {field("phone", "WhatsApp number", {
               type: "tel",
               inputMode: "numeric",
-              maxLength: 10,
               placeholder: "Enter your WhatsApp number",
             })}
             <div className="field">
@@ -111,6 +111,9 @@ export default function ContactMessageCard() {
               />
               <p className="field__hint">{v.message.length} of {MAX} max characters.</p>
             </div>
+            <p className="consent">
+              By submitting you agree to our <Link to="/terms">Terms</Link> and <Link to="/privacy">Privacy Policy</Link>.
+            </p>
             {failed && <p className="field__error" role="alert">{failed}</p>}
             <button type="submit" className="btn btn--gold btn--block contact__submit" disabled={sending}>
               {sending ? "Sending…" : "Submit"}

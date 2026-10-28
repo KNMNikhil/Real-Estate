@@ -12,7 +12,7 @@ import useConsultants from "../utils/useConsultants";
 import useScrollTop from "../utils/useScrollTop";
 
 const STEPS = ["Your details", "Area", "Consultant", "Date"];
-const SAMPLE_PINS = ["600089", "600001", "600020", "600041", "631051"];
+const SAMPLE_PINS = ["631051"];
 
 const COPY = {
   sell: {

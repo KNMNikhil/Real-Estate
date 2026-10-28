@@ -15,8 +15,10 @@ import BuyFlow from "./pages/BuyFlow";
 import Contact from "./pages/Contact";
 import Landing from "./pages/Landing";
 import NotFound from "./pages/NotFound";
+import Privacy from "./pages/Privacy";
 import SellFlow from "./pages/SellFlow";
 import TeamBuying from "./pages/TeamBuying";
+import Terms from "./pages/Terms";
 
 export default function App() {
   return (
@@ -30,6 +32,8 @@ export default function App() {
         <Route path="/buy" element={<BuyFlow />} />
         <Route path="/sell" element={<SellFlow />} />
         <Route path="/tbc" element={<TeamBuying />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/privacy" element={<Privacy />} />
       </Route>
 
       <Route path="/admin/login" element={<AdminLogin />} />

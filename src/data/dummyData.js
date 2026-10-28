@@ -11,48 +11,12 @@ export const DEMO_OTP = "123456";
 
 export const consultants = [
   {
-    id: "C001",
-    name: "Arun Prakash",
-    pincode: "600089",
-    areaName: "Nandambakkam",
-    contact: "9840012345",
-    address: "No. 12, 3rd Cross Street, Nandambakkam, Chennai - 600089",
-    photo: "https://i.pravatar.cc/300?img=12",
-  },
-  {
-    id: "C002",
-    name: "Meena Lakshmi",
-    pincode: "600001",
-    areaName: "Chennai GPO / Parrys",
-    contact: "9841023456",
-    address: "21, Armenian Street, Parrys, Chennai - 600001",
-    photo: "https://i.pravatar.cc/300?img=32",
-  },
-  {
-    id: "C003",
-    name: "Suresh Babu",
-    pincode: "600020",
-    areaName: "Adyar",
-    contact: "9842034567",
-    address: "7, Lattice Bridge Road, Adyar, Chennai - 600020",
-    photo: "https://i.pravatar.cc/300?img=15",
-  },
-  {
-    id: "C004",
-    name: "Priya Narayanan",
-    pincode: "600041",
-    areaName: "Thiruvanmiyur",
-    contact: "9843045678",
-    address: "45, East Coast Road, Thiruvanmiyur, Chennai - 600041",
-    photo: "https://i.pravatar.cc/300?img=47",
-  },
-  {
-    // Chief consultant, Tamil Nadu region. contact number shown to customers.
     id: "C005",
     name: "PAFP Neethi",
+    tagline: "Chief Consultant - Tamil Nadu Region",
     pincode: "631051",
-    areaName: "Manjampadi",
-    contact: "9842393898",
+    areaName: "Manjam Padi",
+    contact: "9842393898", // number shown to customers
     altContact: "8754913898", // second number, also shown to customers
     address: "1/128, Pillaiyar Kovil Street, Manjampadi, Attupakkam, Vellore, Tamil Nadu - 631051",
     photo: "/consultants/neethi.webp",
@@ -178,19 +142,7 @@ const lastNames = ["Kumar", "Sharma", "Iyer"];
 // "Ravi Kumar" is first: he is the demo customer.
 export const customerNames = lastNames.flatMap((last) => firstNames.map((first) => `${first} ${last}`));
 
-export const bookedSlots = {
-  C001: {
-    "2026-10-22": ["10:00", "11:30"],
-    "2026-10-23": ["15:00"],
-  },
-  C002: {
-    "2026-10-20": ["09:30", "13:00"],
-  },
-  C003: {},
-  C004: {
-    "2026-10-21": ["16:00"],
-  },
-};
+export const bookedSlots = {};
 
 export const services = [
   "Buying of Property",

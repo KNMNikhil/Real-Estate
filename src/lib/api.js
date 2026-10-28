@@ -236,13 +236,17 @@ const toConsultant = (r) => ({
   altContact: r.alt_contact ?? "",
   address: r.address ?? "",
   photo: r.photo ?? "",
+  tagline: r.tagline ?? "",
 });
 
 // Consultants from the database (so ones the admin adds appear). Falls back to the built-in samples.
 export async function fetchConsultants() {
   try {
     const rows = await rpc("public_consultants");
-    if (Array.isArray(rows) && rows.length >= 0) return rows.map(toConsultant);
+    if (Array.isArray(rows)) {
+      // Keep the built-in tagline until the database has one.
+      return rows.map(toConsultant).map((c) => ({ ...c, tagline: c.tagline || staticConsultants.find((s) => s.id === c.id)?.tagline || "" }));
+    }
   } catch (e) {
     if (!(e instanceof DbError)) throw e;
   }

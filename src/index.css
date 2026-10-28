@@ -4048,7 +4048,7 @@ a.contact__value:hover {
   color: #14161f;
 }
 
-/* =====================================================================
+/* ==============================================================
    MOBILE / TABLET  (everything below only applies to small screens, so the
    laptop layout is untouched)
    ===================================================================== */
@@ -5626,4 +5626,135 @@ a.contact__value:hover {
 .demo-box code {
   font-size: 1.05rem;
   font-weight: 700;
+}
+/* ===== Terms and Privacy pages ===== */
+.legal {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 64px 24px 90px;
+}
+.legal h1 {
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  letter-spacing: -0.02em;
+  line-height: 1.12;
+  color: #14161f;
+  margin: 8px 0 6px;
+}
+.legal__updated {
+  color: #7a7f90;
+  font-size: 0.9rem;
+  margin: 0 0 22px;
+}
+.legal__intro {
+  font-size: 1.08rem;
+  color: #3a3d4f;
+  padding-bottom: 26px;
+  margin: 0 0 8px;
+  border-bottom: 1px solid #ece6d9;
+}
+.legal__section {
+  padding-top: 26px;
+}
+.legal__section h2 {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  font-size: 1.2rem;
+  color: #14161f;
+  margin: 0 0 10px;
+}
+.legal__section h2 span {
+  color: #d89a2b;
+}
+.legal__section p,
+.legal__section li {
+  color: #4a4f66;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+.legal__section p {
+  margin: 0 0 10px;
+}
+.legal__section ul {
+  margin: 0 0 10px;
+  padding-left: 20px;
+}
+.legal__section li {
+  margin-bottom: 6px;
+}
+.legal__section li::marker {
+  color: #e0a030;
+}
+.consent {
+  margin: 4px 0 14px;
+  font-size: 0.85rem;
+  color: #7a7f90;
+}
+.consent a {
+  color: #b9741f;
+}
+.site-footer__bottom {
+  justify-content: space-between;
+  gap: 8px 24px;
+}
+.site-footer__legal {
+  display: inline-flex;
+  gap: 18px;
+}
+@media (max-width: 760px) {
+  .legal {
+    padding: 36px 18px 60px;
+  }
+  .site-footer__legal {
+    gap: 16px;
+  }
+}
+
+/* ===== Admin dashboard (simple) and consultant tagline ===== */
+.consultant-card__tagline {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+  color: #b9741f;
+  background: linear-gradient(135deg, #fff1d2, #ffe0cc);
+}
+.admin-consultant__head {
+  margin-bottom: 18px;
+}
+.admin-consultant__head h2 {
+  margin: 0 0 4px;
+  font-size: 1.4rem;
+}
+.admin-consultant__head p {
+  margin: 6px 0 0;
+}
+.admin-consultant__sub {
+  margin: 26px 0 10px;
+  font-size: 1.05rem;
+  color: #14161f;
+}
+
+/* Collapsed sidebar: every pill (menu items and profile) becomes a clean circle */
+@media (min-width: 861px) {
+  .sidebar__link {
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-radius 0.3s, background 0.2s, color 0.2s;
+  }
+  .sidebar.is-collapsed .sidebar__link {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto;
+    padding: 0;
+    gap: 0;
+    border-radius: 50%;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .sidebar.is-collapsed .sidebar__link .sidebar__slot {
+    flex: 0 0 40px;
+    width: 40px;
+    height: 38px;
+  }
 }

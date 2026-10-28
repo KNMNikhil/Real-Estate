@@ -50,6 +50,10 @@ export default function Footer() {
       </ul>
       <div className="site-footer__bottom">
         <span>&copy; {new Date().getFullYear()} Living Gods Real Estates. All rights reserved.</span>
+        <span className="site-footer__legal">
+          <Link to="/terms">Terms of Service</Link>
+          <Link to="/privacy">Privacy Policy</Link>
+        </span>
       </div>
     </footer>
   );

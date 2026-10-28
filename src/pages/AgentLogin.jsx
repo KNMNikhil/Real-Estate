@@ -4,7 +4,7 @@ import AuthLayout from "../components/AuthLayout";
 import Icon from "../components/Icon";
 import { useAuth } from "../context/AuthContext";
 import { agentLogin } from "../lib/api";
-import { validateContact } from "../utils/validators";
+import { cleanPhone, validateContact } from "../utils/validators";
 
 export default function AgentLogin() {
   const { agent, loginAgent } = useAuth();
@@ -57,12 +57,11 @@ export default function AgentLogin() {
             className={`input ${error ? "input--error" : ""}`}
             type="tel"
             inputMode="numeric"
-            maxLength={10}
             autoComplete="username"
             placeholder="Enter your 10-digit mobile number"
             value={contact}
             onChange={(e) => {
-              setContact(e.target.value);
+              setContact(cleanPhone(e.target.value));
               setError("");
             }}
           />

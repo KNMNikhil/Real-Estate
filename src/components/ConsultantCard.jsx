@@ -16,6 +16,7 @@ export default function ConsultantCard({ consultant, title }) {
           <div>
             <dt>Name</dt>
             <dd className="consultant-card__name">{consultant.name}</dd>
+            {consultant.tagline && <dd className="consultant-card__tagline">{consultant.tagline}</dd>}
           </div>
           <div>
             <dt>Contact</dt>

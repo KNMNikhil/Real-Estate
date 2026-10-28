@@ -1,32 +1,39 @@
-import DemoBanner from "../components/DemoBanner";
 import { Link } from "react-router-dom";
-import BarChart from "../components/BarChart";
+import AppointmentItem from "../components/AppointmentItem";
+import SafeImage from "../components/SafeImage";
 import { useAdmin } from "../context/AdminContext";
-import { formatLongDate } from "../utils/dates";
-import useAdminData, { agentStats } from "../utils/useAdminData";
+import { todayISO } from "../utils/appointments";
+import { initials } from "../utils/format";
+import useAdminData from "../utils/useAdminData";
 
-const SERIES = [
-  { key: "buy", label: "Buying", className: "is-blue" },
-  { key: "sell", label: "Selling", className: "is-gold" },
-];
+// One person is listed once per kind of request (buying / selling), earliest first.
+function uniqueDeals(list) {
+  const seen = new Set();
+  return [...list]
+    .sort((a, b) => `${a.date} ${a.createdAt}`.localeCompare(`${b.date} ${b.createdAt}`))
+    .filter((d) => {
+      const key = `${d.customerPhone}:${d.kind}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+}
 
+const itemOf = (d) => ({
+  id: d.id,
+  customerName: d.customerName,
+  customerContact: d.customerPhone,
+  customerEmail: d.customerEmail,
+  kind: d.kind,
+  propertyName: d.label,
+  date: d.date,
+});
+
+// Admin dashboard: for each consultant, exactly what the consultant sees on their own dashboard.
 export default function AdminDashboard() {
   const { admin } = useAdmin();
   const { agents, deals, loading, error } = useAdminData();
-
-  const called = deals.filter((d) => d.called).length;
-  const stats = [
-    { label: "Number of deals", value: deals.length },
-    { label: "Buying", value: deals.filter((d) => d.kind === "buy").length },
-    { label: "Selling", value: deals.filter((d) => d.kind === "sell").length },
-    { label: "Calls attended", value: called },
-    { label: "Still to call", value: deals.length - called },
-    { label: "Agents", value: agents.length },
-  ];
-
-  const rows = agents.map((a) => ({ agent: a, ...agentStats(a.id, deals) }));
-  const chart = rows.map((r) => ({ label: r.agent.name.split(" ")[0], buy: r.buy, sell: r.sell }));
-  const recent = deals.slice(0, 8);
+  const today = todayISO();
 
   return (
     <div className="dash-home">
@@ -34,86 +41,77 @@ export default function AdminDashboard() {
         <h1>Admin dashboard</h1>
         <span className="auth-badge">Admin</span>
       </div>
-      <p className="muted">Signed in as {admin.email}</p>
-      <DemoBanner />
+      <p className="muted">
+        Signed in as {admin.email} ·{" "}
+        <Link to="/admin/agents">Manage consultants</Link>
+      </p>
 
       {error && <p className="notice notice--error" role="alert">{error}</p>}
       {loading && <p className="muted">Loading…</p>}
+      {!loading && !error && agents.length === 0 && <p className="notice">No consultants yet.</p>}
 
-      <div className="stat-grid stat-grid--wide">
-        {stats.map((s) => (
-          <div className="stat-card" key={s.label}>
-            <span className="stat-card__value">{s.value}</span>
-            <span className="stat-card__label">{s.label}</span>
-          </div>
-        ))}
-      </div>
+      {agents.map((a) => {
+        const mine = uniqueDeals(deals.filter((d) => d.agentId === a.id));
+        const pending = mine.filter((d) => !d.called);
+        const finished = mine.filter((d) => d.called);
+        const stats = [
+          { label: "Today's appointments", value: mine.filter((d) => d.date === today).length },
+          { label: "Still to call", value: pending.length },
+          { label: "Done", value: finished.length },
+        ];
+        return (
+          <section key={a.id} className="panel admin-consultant">
+            <div className="agent-row admin-consultant__head">
+              <SafeImage className="agent-row__photo" src={a.photo} alt={`Photo of ${a.name}`} fallbackText={initials(a.name)} />
+              <div className="agent-row__info">
+                <h2>{a.name}</h2>
+                {a.tagline && <span className="consultant-card__tagline">{a.tagline}</span>}
+                <p>{a.areaName} · PIN {a.pincode}</p>
+                <p>
+                  <a href={`tel:+91${a.contact}`}>{a.contact}</a>
+                  {a.altContact && (
+                    <>
+                      {" / "}
+                      <a href={`tel:+91${a.altContact}`}>{a.altContact}</a>
+                    </>
+                  )}
+                  {a.email ? ` · ${a.email}` : ""}
+                </p>
+                {a.address && <p className="muted">{a.address}</p>}
+              </div>
+            </div>
 
-      {agents.length > 0 && (
-        <section className="panel">
-          <h2>Deals per agent</h2>
-          <BarChart data={chart} series={SERIES} />
-        </section>
-      )}
-
-      <section className="panel">
-        <h2>How each agent is doing</h2>
-        {rows.length === 0 ? (
-          !loading && <p className="notice">No agents yet. Add one from the Agents page.</p>
-        ) : (
-          <div className="table-wrap">
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Agent</th>
-                  <th>Area</th>
-                  <th>Deals</th>
-                  <th>Buying</th>
-                  <th>Selling</th>
-                  <th>Calls attended</th>
-                  <th>Still to call</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((r) => (
-                  <tr key={r.agent.id}>
-                    <td>
-                      <Link to={`/admin/agents/${r.agent.id}`}>{r.agent.name}</Link>
-                    </td>
-                    <td>{r.agent.areaName} ({r.agent.pincode})</td>
-                    <td>{r.total}</td>
-                    <td>{r.buy}</td>
-                    <td>{r.sell}</td>
-                    <td>{r.called}</td>
-                    <td>{r.pending}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </section>
-
-      <section className="panel">
-        <h2>Latest bookings</h2>
-        {recent.length === 0 ? (
-          !loading && <p className="notice">No bookings yet.</p>
-        ) : (
-          <ul className="activity-list">
-            {recent.map((d) => (
-              <li key={d.id}>
-                <div>
-                  <strong>{d.customerName}</strong> · {d.kind === "sell" ? "Selling" : "Buying"}
-                  <em>
-                    with <Link to={`/admin/agents/${d.agentId}`}>{d.agentName}</Link> · {formatLongDate(d.date)}
-                  </em>
+            <div className="stat-grid stat-grid--three">
+              {stats.map((s) => (
+                <div className="stat-card" key={s.label}>
+                  <span className="stat-card__value">{s.value}</span>
+                  <span className="stat-card__label">{s.label}</span>
                 </div>
-                <span className={`pill ${d.called ? "pill--done" : "pill--todo"}`}>{d.called ? "Called" : "To call"}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+              ))}
+            </div>
+
+            <h3 className="admin-consultant__sub">To-do list</h3>
+            {mine.length === 0 && <p className="notice">No one has booked with this consultant yet.</p>}
+            {pending.length > 0 && (
+              <ul className="todo-list">
+                {pending.map((d) => (
+                  <AppointmentItem key={d.id} item={itemOf(d)} done={false} viewOnly showDate />
+                ))}
+              </ul>
+            )}
+            {finished.length > 0 && (
+              <>
+                <h3 className="todo__section">Done</h3>
+                <ul className="todo-list">
+                  {finished.map((d) => (
+                    <AppointmentItem key={d.id} item={itemOf(d)} done viewOnly showDate />
+                  ))}
+                </ul>
+              </>
+            )}
+          </section>
+        );
+      })}
     </div>
   );
 }

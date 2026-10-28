@@ -4,7 +4,7 @@ import { useAdmin } from "../context/AdminContext";
 
 const NAV = [
   { to: "/admin", label: "Dashboard", icon: "dashboard", end: true },
-  { to: "/admin/agents", label: "Agents", icon: "activities" },
+  { to: "/admin/agents", label: "Consultants", icon: "activities" },
 ];
 
 export default function AdminLayout() {

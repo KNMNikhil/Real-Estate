@@ -2,11 +2,12 @@ import { formatLongDate } from "../utils/dates";
 
 // One customer request as a to-do item: tick it once you have spoken to them.
 // readOnly = reminder card (calendar): no tick box, no to-do state.
-export default function AppointmentItem({ item, done = false, onToggle, showDate = false, readOnly = false }) {
+// viewOnly = admin view: shows the To call / Done state but has no tick box.
+export default function AppointmentItem({ item, done = false, onToggle, showDate = false, readOnly = false, viewOnly = false }) {
   const phone = item.customerContact;
   return (
     <li className={`todo ${done ? "is-done" : ""} ${readOnly ? "is-reminder" : ""}`}>
-      {!readOnly && (
+      {!readOnly && !viewOnly && (
         <label className="todo__tick">
           <input type="checkbox" checked={done} onChange={() => onToggle(item.id)} />
           <span className="visually-hidden">Mark {item.customerName} as done</span>

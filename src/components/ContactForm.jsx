@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { validateContact, validateEmail, validateName } from "../utils/validators";
+import { Link } from "react-router-dom";
+import { cleanPhone, validateContact, validateEmail, validateName } from "../utils/validators";
 
 // Collects the customer's name, email and phone (there are no customer accounts).
 export default function ContactForm({ initial, onSubmit, onBack, submitLabel = "Continue" }) {
@@ -12,7 +13,7 @@ export default function ContactForm({ initial, onSubmit, onBack, submitLabel = "
     phone: validateContact(values.phone),
   };
   const shown = submitted ? errors : {};
-  const set = (k) => (e) => setValues((v) => ({ ...v, [k]: e.target.value }));
+  const set = (k) => (e) => setValues((v) => ({ ...v, [k]: k === "phone" ? cleanPhone(e.target.value) : e.target.value }));
 
   const handle = (e) => {
     e.preventDefault();
@@ -43,10 +44,12 @@ export default function ContactForm({ initial, onSubmit, onBack, submitLabel = "
       {field("phone", "Phone number", {
         type: "tel",
         inputMode: "numeric",
-        maxLength: 10,
         autoComplete: "tel-national",
         placeholder: "10-digit mobile number",
       })}
+      <p className="consent">
+        By continuing you agree to our <Link to="/terms">Terms</Link> and <Link to="/privacy">Privacy Policy</Link>.
+      </p>
       <div className="actions">
         {onBack ? (
           <button type="button" className="btn btn--ghost" onClick={onBack}>Back</button>

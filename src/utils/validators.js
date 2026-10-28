@@ -28,13 +28,23 @@ export function validateAge(value) {
   return "";
 }
 
+// Indian mobile number: exactly 10 digits, starts with 6-9.
 export function validateContact(value) {
   const text = String(value ?? "").trim();
-  if (!text) return "Please enter the contact number.";
-  if (!/^\d+$/.test(text)) return "Contact number must contain digits only.";
-  if (text.length !== 10) return "Contact number must be exactly 10 digits.";
-  if (!/^[6-9]/.test(text)) return "Contact number must start with 6, 7, 8 or 9.";
+  if (!text) return "Please enter the mobile number.";
+  if (!/^\d+$/.test(text)) return "The mobile number can only have digits (0-9).";
+  if (text.length !== 10) return "The mobile number must be exactly 10 digits.";
+  if (!/^[6-9]/.test(text)) return "The mobile number must start with 6, 7, 8 or 9.";
+  if (/^(\d)\1{9}$/.test(text)) return "Please enter a real mobile number.";
   return "";
+}
+
+// Turns what was typed or pasted into up to 10 digits. Drops a leading +91 / 91 / 0.
+export function cleanPhone(raw) {
+  let d = String(raw ?? "").replace(/\D/g, "");
+  if (d.length > 10 && d.startsWith("91")) d = d.slice(2);
+  else if (d.length > 10 && d.startsWith("0")) d = d.slice(1);
+  return d.slice(0, 10);
 }
 
 export function validatePositiveNumber(value, label, { integer = false } = {}) {
@@ -61,9 +71,34 @@ export function validateRequired(value, label, minLength = 1) {
   return "";
 }
 
+const EMAIL_RE =
+  /^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*\.[A-Za-z]{2,24}$/;
+
+// Common typos of popular providers, so people notice before they submit.
+const TYPO_DOMAINS = {
+  "gmial.com": "gmail.com", "gamil.com": "gmail.com", "gmai.com": "gmail.com", "gmail.con": "gmail.com",
+  "gmail.co": "gmail.com", "gmail.cm": "gmail.com", "gnail.com": "gmail.com", "gmaill.com": "gmail.com",
+  "yaho.com": "yahoo.com", "yahoo.con": "yahoo.com", "hotmial.com": "hotmail.com", "outlook.con": "outlook.com",
+};
+
 export function validateEmail(value) {
   const text = String(value ?? "").trim();
   if (!text) return "Please enter your email address.";
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(text)) return "Please enter a valid email address.";
+  if (/\s/.test(text)) return "The email address cannot have spaces.";
+  if (text.length > 254) return "That email address is too long.";
+  const at = text.indexOf("@");
+  if (at === -1) return "The email address needs an @, like name@gmail.com.";
+  if (text.indexOf("@", at + 1) !== -1) return "The email address can only have one @.";
+  const local = text.slice(0, at);
+  const domain = text.slice(at + 1).toLowerCase();
+  if (!local) return "Please type the part before the @.";
+  if (local.length > 64) return "The part before the @ is too long.";
+  if (local.startsWith(".") || local.endsWith(".") || local.includes("..")) {
+    return "The part before the @ cannot start or end with a dot, or have two dots in a row.";
+  }
+  if (!domain) return "Please type the part after the @, like gmail.com.";
+  if (!domain.includes(".")) return "The part after the @ needs a dot, like gmail.com.";
+  if (TYPO_DOMAINS[domain]) return `Did you mean ${local}@${TYPO_DOMAINS[domain]}?`;
+  if (!EMAIL_RE.test(text)) return "Please enter a valid email address, like name@gmail.com.";
   return "";
 }

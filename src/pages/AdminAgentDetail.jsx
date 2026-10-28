@@ -1,11 +1,10 @@
-import DemoBanner from "../components/DemoBanner";
 import { Link, useParams } from "react-router-dom";
 import SafeImage from "../components/SafeImage";
 import { formatLongDate } from "../utils/dates";
 import { initials } from "../utils/format";
 import useAdminData, { agentStats } from "../utils/useAdminData";
 
-// What one agent is doing: every booking they have and whether they have called the customer.
+// What one consultant is doing: every booking they have and whether they have called the customer.
 export default function AdminAgentDetail() {
   const { agentId } = useParams();
   const { agents, deals, loading, error } = useAdminData();
@@ -16,16 +15,15 @@ export default function AdminAgentDetail() {
   if (!loading && !agent && !error) {
     return (
       <div className="dash-home">
-        <p className="notice">That agent was not found.</p>
-        <Link to="/admin/agents" className="btn btn--outline">Back to agents</Link>
+        <p className="notice">That consultant was not found.</p>
+        <Link to="/admin/agents" className="btn btn--outline">Back to consultants</Link>
       </div>
     );
   }
 
   return (
     <div className="dash-home">
-      <Link to="/admin/agents" className="back-link">‹ All agents</Link>
-      <DemoBanner />
+      <Link to="/admin/agents" className="back-link">‹ All consultants</Link>
       {error && <p className="notice notice--error" role="alert">{error}</p>}
       {loading && <p className="muted">Loading…</p>}
 
@@ -59,7 +57,7 @@ export default function AdminAgentDetail() {
           <section className="panel">
             <h2>Bookings</h2>
             {mine.length === 0 ? (
-              <p className="notice">This agent has no bookings yet.</p>
+              <p className="notice">This consultant has no bookings yet.</p>
             ) : (
               <div className="table-wrap">
                 <table className="table">

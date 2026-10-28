@@ -1,10 +1,11 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { adminLogout } from "../lib/admin";
 import { KEYS, readJSON, removeKey, writeJSON } from "../utils/storage";
 
 const AdminContext = createContext(null);
 const KEY = KEYS.admin ?? "lg_admin";
 
-// Admin session: { token, email, expiresAt } from the email one-time-code login.
+// Admin session: { token, email, expiresAt } from the email + password login.
 export function AdminProvider({ children }) {
   const [session, setSession] = useState(() => {
     const saved = readJSON(KEY, null);
@@ -17,9 +18,10 @@ export function AdminProvider({ children }) {
   }, []);
 
   const logoutAdmin = useCallback(() => {
+    if (session?.token) adminLogout(session.token);
     removeKey(KEY);
     setSession(null);
-  }, []);
+  }, [session]);
 
   // Sign out automatically when the token expires.
   useEffect(() => {

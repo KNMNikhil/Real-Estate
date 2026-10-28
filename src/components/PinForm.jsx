@@ -39,7 +39,7 @@ export default function PinForm({
           type="text"
           inputMode="numeric"
           autoComplete="postal-code"
-          placeholder="e.g. 600089"
+          placeholder="e.g. 631051"
           value={value}
           onChange={handleChange}
           aria-invalid={error ? "true" : "false"}
