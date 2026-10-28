@@ -4,6 +4,7 @@ export const KEYS = {
   pending: "lg_pending_login",
   accounts: "lg_accounts",
   agent: "lg_agent",
+  admin: "lg_admin",
   messages: "lg_messages",
   properties: "lg_properties",
   bookings: "lg_bookings",

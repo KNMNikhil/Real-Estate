@@ -6,20 +6,19 @@ import DateStep from "../components/DateStep";
 import Modal from "../components/Modal";
 import PinForm from "../components/PinForm";
 import StepIndicator from "../components/StepIndicator";
-import { mouText } from "../data/dummyData";
 import { bookAppointment, fetchBookedTimes } from "../lib/api";
 import { toISODate, tomorrowISO } from "../utils/dates";
-import { findConsultantByPin } from "../utils/lookup";
+import useConsultants from "../utils/useConsultants";
 import useScrollTop from "../utils/useScrollTop";
 
-const STEPS = ["Your details", "Area", "Consultant", "Date", "Agreement"];
-const SAMPLE_PINS = ["600089", "600001", "600020", "600041"];
+const STEPS = ["Your details", "Area", "Consultant", "Date"];
+const SAMPLE_PINS = ["600089", "600001", "600020", "600041", "631051"];
 
 const COPY = {
   sell: {
     eyebrow: "Sell a property",
     title: "List your property with us",
-    intro: "No account needed. Meet your area consultant, choose a date and accept the agreement in a few easy steps.",
+    intro: "No account needed. Meet your area consultant, choose a date and we will call you. It takes just a few easy steps.",
     pinTitle: "Where is your property?",
     pinHelp: "We will connect you with the consultant who covers that area.",
     consultantTitle: "Your area consultant",
@@ -28,13 +27,12 @@ const COPY = {
       2: ["Why your PIN?", ["Each area has its own dedicated consultant.", "Your consultant knows local prices and buyers.", "Enter the PIN where the property is located."]],
       3: ["What your consultant does", ["Visits and verifies your property.", "Helps you set a fair price.", "Handles buyer visits and paperwork with you."]],
       4: ["Choosing a date", ["Bookings open from tomorrow.", "Pick a day when you or a representative can be at the property.", "Use the arrows to see later months."]],
-      5: ["About the agreement", ["It sets out how we list and promote your property.", "Read it fully before you accept.", "Your consultant can explain any clause."]],
     },
   },
   buy: {
     eyebrow: "Buy a property",
     title: "Find your next property with us",
-    intro: "No account needed. Meet your area consultant, choose a date and accept the agreement in a few easy steps.",
+    intro: "No account needed. Meet your area consultant, choose a date and we will call you. It takes just a few easy steps.",
     pinTitle: "Which area are you looking in?",
     pinHelp: "We will connect you with the consultant who covers that area.",
     consultantTitle: "Your area consultant",
@@ -43,15 +41,15 @@ const COPY = {
       2: ["Why your PIN?", ["Each area has its own dedicated consultant.", "Your consultant knows the properties on offer locally.", "Enter the PIN of the area you want to buy in."]],
       3: ["What your consultant does", ["Shows you the properties that match your needs.", "Arranges visits and answers your questions.", "Guides you through paperwork and registration."]],
       4: ["Choosing a date", ["Bookings open from tomorrow.", "Pick the day you would like to be contacted.", "Use the arrows to see later months."]],
-      5: ["About the agreement", ["It sets out how we work with you as a buyer.", "Read it fully before you accept.", "Your consultant can explain any clause."]],
     },
   },
 };
 
-// Same steps for buying and selling: details, PIN, consultant, date, agreement.
-// No time slot is chosen; the consultant contacts the customer after the agreement.
+// Same steps for buying and selling: details, PIN, consultant, date. Confirming the date submits.
+// No time slot is chosen; the consultant contacts the customer afterwards.
 export default function ContactFlow({ kind }) {
   const copy = COPY[kind];
+  const allConsultants = useConsultants();
   const navigate = useNavigate();
 
   const [step, setStep] = useState(1);
@@ -60,7 +58,6 @@ export default function ContactFlow({ kind }) {
   const [consultant, setConsultant] = useState(null);
   const [noConsultant, setNoConsultant] = useState(false);
   const [date, setDate] = useState("");
-  const [agreed, setAgreed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [doneOpen, setDoneOpen] = useState(false);
@@ -93,7 +90,7 @@ export default function ContactFlow({ kind }) {
   );
 
   const handlePin = (value) => {
-    const found = findConsultantByPin(value);
+    const found = allConsultants.find((c) => c.pincode === value) ?? null;
     setNoConsultant(!found);
     if (found) {
       setPin(value);
@@ -102,7 +99,7 @@ export default function ContactFlow({ kind }) {
     }
   };
 
-  const handleAgree = async () => {
+  const handleConfirm = async () => {
     setSubmitting(true);
     setError("");
     try {
@@ -217,44 +214,14 @@ export default function ContactFlow({ kind }) {
                   setError("");
                 }}
                 onBack={() => setStep(3)}
-                onNext={() => setStep(5)}
+                onNext={handleConfirm}
+                submitting={submitting}
                 blocked={blocked}
                 onMonthChange={loadBlocked}
               />
             </>
           )}
 
-          {step === 5 && (
-            <section className="card step-card" aria-labelledby="mou-title">
-              <h2 id="mou-title">Agreement (MOU)</h2>
-              <p className="muted">Please read the terms before continuing.</p>
-              <div className="mou-box" tabIndex={0} role="region" aria-label="MOU terms">
-                {mouText}
-              </div>
-              <label className="checkbox">
-                <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
-                <span>I agree to the terms and conditions.</span>
-              </label>
-              {error && (
-                <p className="notice notice--error" role="alert">
-                  {error}
-                </p>
-              )}
-              <div className="actions">
-                <button type="button" className="btn btn--ghost" onClick={() => setStep(4)}>
-                  Back
-                </button>
-                <button
-                  type="button"
-                  className="btn btn--primary"
-                  disabled={!agreed || submitting}
-                  onClick={handleAgree}
-                >
-                  {submitting ? "Submitting…" : "Continue"}
-                </button>
-              </div>
-            </section>
-          )}
         </div>
 
         <aside className="sell__aside" aria-label="Helpful information">
@@ -274,6 +241,12 @@ export default function ContactFlow({ kind }) {
                 Call <strong>{consultant.name}</strong>
                 <br />
                 <a href={`tel:+91${consultant.contact}`}>{consultant.contact}</a>
+                {consultant.altContact && (
+                  <>
+                    <br />
+                    <a href={`tel:+91${consultant.altContact}`}>{consultant.altContact}</a>
+                  </>
+                )}
               </p>
             </section>
           )}
@@ -290,8 +263,11 @@ export default function ContactFlow({ kind }) {
           }
         >
           <p>
-            Thank you, <strong>{contact.name}</strong>. Your consultant, <strong>{consultant.name}</strong>, will
-            contact you shortly.
+            Thank you, <strong>{contact.name}</strong>. Your date is confirmed.
+          </p>
+          <p>
+            The area consultant, <strong>{consultant.name}</strong>, will call you shortly. Please keep your phone
+            nearby.
           </p>
         </Modal>
       )}

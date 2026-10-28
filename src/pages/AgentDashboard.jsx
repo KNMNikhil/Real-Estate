@@ -1,15 +1,40 @@
+import { useState } from "react";
 import AppointmentItem from "../components/AppointmentItem";
 import { useAuth } from "../context/AuthContext";
+import { setAppointmentCalled } from "../lib/api";
 import { byDateTime, todayISO } from "../utils/appointments";
 import { formatLongDate } from "../utils/dates";
 import useAgentAppointments from "../utils/useAgentAppointments";
 import useContacted from "../utils/useContacted";
 
 export default function AgentDashboard() {
-  const { agent } = useAuth();
-  const { items, loading, error } = useAgentAppointments();
-  const { done, toggle } = useContacted();
+  const { agent, token } = useAuth();
+  const { items, loading, error, patch } = useAgentAppointments();
+  const local = useContacted(); // browser-only fallback when the database cannot store ticks
+  const [tickError, setTickError] = useState("");
   const today = todayISO();
+
+  // "Called" is stored in the database (the admin can see it). Older databases without
+  // supabase/admin.sql report no value, so those ticks stay in this browser.
+  const isDone = (a) => (a.called === undefined ? local.done.has(a.id) : a.called);
+
+  const toggle = async (id) => {
+    const a = items.find((x) => x.id === id);
+    if (!a) return;
+    setTickError("");
+    if (a.called === undefined) {
+      local.toggle(id);
+      return;
+    }
+    const next = !a.called;
+    patch(id, { called: next });
+    try {
+      await setAppointmentCalled(token, id, next);
+    } catch (e) {
+      patch(id, { called: !next });
+      setTickError("Could not save that tick. Please try again.");
+    }
+  };
 
   // Everyone who has booked with this consultant. Not-yet-done first (soonest date first),
   // finished ones below.
@@ -21,8 +46,8 @@ export default function AgentDashboard() {
     seen.add(key);
     return true;
   });
-  const pending = sorted.filter((a) => !done.has(a.id));
-  const finished = sorted.filter((a) => done.has(a.id));
+  const pending = sorted.filter((a) => !isDone(a));
+  const finished = sorted.filter((a) => isDone(a));
   const todayCount = pending.filter((a) => a.date === today).length;
 
   const stats = [
@@ -42,6 +67,7 @@ export default function AgentDashboard() {
       </p>
 
       {error && <p className="notice notice--error" role="alert">{error}</p>}
+      {tickError && <p className="notice notice--error" role="alert">{tickError}</p>}
       {loading && <p className="muted">Loading your appointments…</p>}
 
       <div className="stat-grid stat-grid--three">

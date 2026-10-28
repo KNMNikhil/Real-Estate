@@ -18,14 +18,14 @@ export class DbError extends Error {
   }
 }
 
-async function request(path, { method = "GET", body, headers = {} } = {}) {
+async function request(path, { method = "GET", body, headers = {}, token, base = "rest/v1" } = {}) {
   let res;
   try {
-    res = await fetch(`${URL}/rest/v1/${path}`, {
+    res = await fetch(`${URL}/${base}/${path}`, {
       method,
       headers: {
         apikey: KEY,
-        Authorization: `Bearer ${KEY}`,
+        Authorization: `Bearer ${token ?? KEY}`,
         "Content-Type": "application/json",
         ...headers,
       },
@@ -42,12 +42,14 @@ async function request(path, { method = "GET", body, headers = {} } = {}) {
     data = text;
   }
   if (!res.ok) {
-    throw new DbError(data?.message ?? `Request failed (${res.status})`, { code: data?.code, status: res.status });
+    throw new DbError(data?.message ?? data?.msg ?? data?.error_description ?? `Request failed (${res.status})`, { code: data?.code ?? data?.error_code, status: res.status });
   }
   return data;
 }
 
-export const rpc = (fn, args = {}) => request(`rpc/${fn}`, { method: "POST", body: args });
+export const rpc = (fn, args = {}, token) => request(`rpc/${fn}`, { method: "POST", body: args, token });
+// Supabase Auth (email one-time codes). Used only by the admin login.
+export const authPost = (path, body) => request(path, { method: "POST", body, base: "auth/v1" });
 export const select = (table, query = "") => request(`${table}${query ? `?${query}` : ""}`);
 export const insert = (table, row) =>
   request(table, { method: "POST", body: row, headers: { Prefer: "return=minimal" } });

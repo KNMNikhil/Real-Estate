@@ -31,5 +31,10 @@ export default function useAgentAppointments() {
     load();
   }, [load]);
 
-  return { items, loading, error, reload: load };
+  // Update one item locally (used for instant "called" ticks).
+  const patch = useCallback((id, changes) => {
+    setItems((prev) => prev.map((a) => (a.id === id ? { ...a, ...changes } : a)));
+  }, []);
+
+  return { items, loading, error, reload: load, patch };
 }

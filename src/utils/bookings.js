@@ -29,3 +29,28 @@ export const getUserBookings = (contact) =>
   getStoredBookings()
     .filter((b) => b.userContact === contact)
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+// Demo mode only: bookings that were kept in this browser (the database had no such consultant).
+// Shaped like the dashboard rows; ids are shared by the consultant and admin demo views.
+export function browserBookingRows(consultantId) {
+  let called = {};
+  try {
+    called = JSON.parse(localStorage.getItem("lg_agent_demo_called") || "{}");
+  } catch {
+    /* storage unavailable */
+  }
+  return getStoredBookings()
+    .filter((b) => !consultantId || b.consultantId === consultantId)
+    .map((b) => ({
+      id: b.id,
+      consultantId: b.consultantId,
+      kind: b.kind,
+      date: b.date,
+      time: b.time,
+      createdAt: b.createdAt,
+      called: !!called[b.id],
+      customerName: b.userName,
+      customerEmail: b.userEmail,
+      customerPhone: b.userContact,
+    }));
+}

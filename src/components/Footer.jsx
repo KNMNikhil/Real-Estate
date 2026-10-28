@@ -13,7 +13,7 @@ export default function Footer() {
           </span>
           <div>
             <strong>Living Gods Real Estates</strong>
-            <p>A unit of McCoy Engineering Private Limited</p>
+            <p>A Unit of McCoy Engineering Private Limited</p>
           </div>
         </div>
         <nav className="site-footer__links" aria-label="Footer">
@@ -23,6 +23,7 @@ export default function Footer() {
           <Link to="/sell">Sell</Link>
           <Link to="/contact">Contact us</Link>
           <Link to="/consultant/login">Consultant login</Link>
+          <Link to="/admin/login">Admin Login</Link>
         </nav>
       </div>
       <ul className="site-footer__contact" id="contact" aria-label="Contact information">
@@ -36,7 +37,11 @@ export default function Footer() {
         </li>
         <li>
           <span>Office</span>
-          <address>{CONTACT.address}</address>
+          <address>
+            <a href={CONTACT.mapUrl} target="_blank" rel="noopener noreferrer" title="Open in Google Maps">
+              {CONTACT.address}
+            </a>
+          </address>
         </li>
         <li>
           <span>Website</span>
