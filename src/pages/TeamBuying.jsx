@@ -1,11 +1,9 @@
 import { Link } from "react-router-dom";
-import Logo from "../components/Logo";
 
-const STEPS = [
-  { title: "Buyers come together", text: "Several buyers interested in the same property form one team." },
-  { title: "One team, one offer", text: "The team speaks to the seller with a single, united voice." },
-  { title: "Stronger bargaining", text: "A group of serious buyers can negotiate better than one person alone." },
-  { title: "Fair for the seller", text: "The seller deals with committed buyers and is not at a loss." },
+const TEAMS = [
+  { code: "RI", name: "Relatives India Team", tone: "ri" },
+  { code: "FI", name: "Friends India Team", tone: "fi" },
+  { code: "ABR", name: "Any Buyer Random Team", tone: "abr" },
 ];
 
 function Person() {
@@ -70,42 +68,49 @@ export default function TeamBuying() {
         </div>
       </section>
 
-      <section className="tbc__section" aria-labelledby="tbc-how">
-        <h2 id="tbc-how">Why it works for everyone</h2>
-        <ol className="tbc__steps">
-          {STEPS.map((s, i) => (
-            <li key={s.title}>
-              <span className="tbc__num">{i + 1}</span>
-              <div>
-                <h3>{s.title}</h3>
-                <p>{s.text}</p>
-              </div>
+      <section className="tbc__section" aria-labelledby="tbc-teams">
+        <h2 id="tbc-teams">Teams category</h2>
+        <ul className="tbc__teams">
+          {TEAMS.map((t, i) => (
+            <li key={t.code} className={`tbc__team tbc__team--${t.tone}`}>
+              <span className="tbc__team-num">{i + 1}</span>
+              <span className="tbc__team-code">{t.code}</span>
+              <strong>{t.name}</strong>
             </li>
           ))}
-        </ol>
+        </ul>
+      </section>
 
-        <div className="tbc__twin">
-          <div>
-            <h3>For buyers</h3>
-            <p>More bargaining power together than any one buyer could have alone.</p>
-          </div>
-          <div>
-            <h3>For the seller</h3>
-            <p>A group of genuine, committed buyers, and a fair deal with no loss.</p>
-          </div>
+      <section className="tbc__section tbc__mind" aria-labelledby="tbc-mindset">
+        <h2 id="tbc-mindset">The most common basic mindset and the exception</h2>
+        <div className="tbc__mind-text">
+          <p>
+            The most common basic mindset of any individual is to keep the investment strategy and the
+            asset details as <mark>confidential</mark> as possible.
+          </p>
+          <span className="tbc__mind-divider" aria-hidden="true">
+            <i />
+            <b>✦</b>
+            <i />
+          </span>
+          <p>
+            TBC suggests joining in some potential real estate investment opportunities to get more{" "}
+            <mark>buying power</mark> and <mark>bargaining strength</mark> for <mark>mutual benefits</mark>.
+          </p>
         </div>
+        <blockquote className="tbc__quote">“United We Stand – Divided We Fall”</blockquote>
       </section>
 
       <section className="tbc__join" aria-labelledby="tbc-join">
-        <h2 id="tbc-join">Join Together Through</h2>
-        <a className="tbc__logo-btn" href="https://www.livinggods.in" target="_blank" rel="noopener noreferrer" aria-label="Join together through Living Gods (opens www.livinggods.in)">
-          <Logo size={56} />
-          <span>
-            <strong>Living Gods</strong>
-            <small>www.livinggods.in</small>
-          </span>
-          <span className="tbc__logo-arrow" aria-hidden="true">→</span>
-        </a>
+        <h2 id="tbc-join">Join as Team; Be Ready for a Smart Buy</h2>
+        <div className="tbc__cta">
+          <Link to="/tbc/get-started" className="tbc__cta-btn tbc__cta-btn--primary">
+            Get started <span aria-hidden="true">→</span>
+          </Link>
+          <Link to="/tbc/projects" className="tbc__cta-btn tbc__cta-btn--ghost">
+            TBC projects ready <span aria-hidden="true">→</span>
+          </Link>
+        </div>
         <p className="muted">
           <Link to="/">Back to home</Link>
         </p>

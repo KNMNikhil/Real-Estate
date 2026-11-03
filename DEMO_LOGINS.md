@@ -1,38 +1,35 @@
 # Demo / test logins and dummy data
 
-Everything below is for testing only. Replace before going live.
+For testing only. None of these demo shortcuts exist in the production build (checked: the built
+files contain no demo login text). Replace the dummy values before going live.
 
-## Website: http://localhost:5174
+## Website (local: http://localhost:5174)
 
-### Admin portal (/admin/login), local dev server only
-| Email | Code (OTP) |
-|---|---|
-| admin@livinggods.demo | 123456 |
+### Consultant portal (/consultant/login)
+| Consultant | Login number | Password |
+|---|---|---|
+| PAFP Neethi (Manjam Padi, PIN 631051) | 8754913898 | Agent@631051 (dummy) |
 
-Demo mode uses sample agents/deals saved in this browser (localStorage key `lg_admin_demo_v2`).
-Nothing reaches the real database. The real admin needs `supabase/admin.sql`.
+- Customers see two numbers on his card: 9842393898 and 8754913898.
+- On the LOCAL dev server only, this login also works with sample appointments and sample TBC enquiries
+  even when the database has no such account (nothing is sent to the database).
+- On the live site the account must exist in Supabase (`supabase/add_consultant_neethi.sql`).
 
-### Consultant / agent login (/consultant/login)
-On the local dev server these demo logins ALWAYS work (sample appointments, ticks saved in this browser only, nothing sent to the database).
-On the live site they work only after the consultant exists in Supabase (`schema.sql`, and `add_consultant_neethi.sql` for Neethi).
-Login = contact number, password = `Agent@<PIN>`. Defined in `supabase/schema.sql`.
-| Consultant | PIN | Login number | Password |
-|---|---|---|---|
-| Arun Prakash (Nandambakkam) | 600089 | 9840012345 | Agent@600089 |
-| Meena Lakshmi (Parrys) | 600001 | 9841023456 | Agent@600001 |
-| Suresh Babu (Adyar) | 600020 | 9842034567 | Agent@600020 |
-| Priya Narayanan (Thiruvanmiyur) | 600041 | 9843045678 | Agent@600041 |
-| PAFP Neethi (Manjampadi, Vellore) | 631051 | **8754913898** (9842393898 also works) | Agent@631051 (dummy) |
+### Admin portal (/admin/login)
+Email + password login against the database (`supabase/admin_password_login.sql`). There is no demo admin any more.
+Use the real admin email and password set in Supabase.
 
-PAFP Neethi: customers see BOTH 9842393898 and 8754913898. His row is created by
-`supabase/add_consultant_neethi.sql` (run it in the Supabase SQL editor).
+## Database scripts to run once in the Supabase SQL editor (in this order)
+1. `supabase/schema.sql`
+2. `supabase/admin.sql` and `supabase/admin_password_login.sql`
+3. `supabase/add_consultant_neethi.sql`
+4. `supabase/single_consultant.sql` (removes the four old sample consultants)
+5. `supabase/tbc.sql` (TBC enquiries shown on the consultant's TBC page)
 
-### Other dummy values in the code
+## Other dummy values in the code
 | Where | Value |
 |---|---|
-| `src/data/dummyData.js` `DEMO_OTP` | 123456 (customer OTP demo) |
 | `src/data/dummyData.js` `demoUser` | demo customer "Ravi Kumar" |
-| Buy/Sell PIN chips (`ContactFlow.jsx`) | 600089, 600001, 600020, 600041, 631051 |
-| `src/data/dummyData.js` consultants | static fallback list if the database is unreachable |
+| Buy/Sell enquiries | the time slot is a placeholder `TBA-xxxxxx` (no real time) |
+| `src/pages/TbcProjects.jsx` | Baba Pasumai Nagar project content (from the client's note) |
 | Neethi photo | `public/consultants/neethi.webp` |
-| Buy/Sell enquiries | time slot is a placeholder `TBA-xxxxxx` (no real time) |

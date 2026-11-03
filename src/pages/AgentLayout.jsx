@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 const NAV = [
   { to: "/consultant", label: "Dashboard", icon: "dashboard", end: true },
   { to: "/consultant/calendar", label: "Calendar", icon: "calendar" },
+  { to: "/consultant/tbc", label: "TBC", icon: "activities" },
 ];
 
 export default function AgentLayout() {
