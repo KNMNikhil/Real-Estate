@@ -10,6 +10,7 @@ import AgentCalendar from "./pages/AgentCalendar";
 import AgentDashboard from "./pages/AgentDashboard";
 import AgentLayout from "./pages/AgentLayout";
 import AgentLogin from "./pages/AgentLogin";
+import AgentTbc from "./pages/AgentTbc";
 import AgentProfile from "./pages/AgentProfile";
 import BuyFlow from "./pages/BuyFlow";
 import Contact from "./pages/Contact";
@@ -17,6 +18,8 @@ import Landing from "./pages/Landing";
 import NotFound from "./pages/NotFound";
 import Privacy from "./pages/Privacy";
 import SellFlow from "./pages/SellFlow";
+import TbcGetStarted from "./pages/TbcGetStarted";
+import TbcProjects from "./pages/TbcProjects";
 import TeamBuying from "./pages/TeamBuying";
 import Terms from "./pages/Terms";
 
@@ -32,6 +35,8 @@ export default function App() {
         <Route path="/buy" element={<BuyFlow />} />
         <Route path="/sell" element={<SellFlow />} />
         <Route path="/tbc" element={<TeamBuying />} />
+        <Route path="/tbc/get-started" element={<TbcGetStarted />} />
+        <Route path="/tbc/projects" element={<TbcProjects />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
       </Route>
@@ -54,6 +59,7 @@ export default function App() {
       >
         <Route index element={<AgentDashboard />} />
         <Route path="calendar" element={<AgentCalendar />} />
+        <Route path="tbc" element={<AgentTbc />} />
         <Route path="profile" element={<AgentProfile />} />
       </Route>
 

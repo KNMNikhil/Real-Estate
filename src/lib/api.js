@@ -130,6 +130,102 @@ export async function sendContactMessage(m) {
   }
 }
 
+// ---- TBC (Team Buying Concept) enquiries ------------------------------------
+const TBC_KEY = "lg_tbc_enquiries";
+const readTbcLocal = () => {
+  try {
+    return JSON.parse(localStorage.getItem(TBC_KEY) || "[]");
+  } catch {
+    return [];
+  }
+};
+const writeTbcLocal = (rows) => {
+  try {
+    localStorage.setItem(TBC_KEY, JSON.stringify(rows));
+  } catch {
+    /* storage unavailable */
+  }
+};
+
+// Saves the enquiry for the consultant. When the database cannot take it (functions not installed,
+// or the consultant is not in it yet) it is kept in this browser, where the demo dashboard shows it.
+export async function submitTbcEnquiry({ consultantId, name, email, phone, team, members, project, note }) {
+  try {
+    await rpc("submit_tbc_enquiry", {
+      p_consultant: consultantId,
+      p_name: name,
+      p_email: email,
+      p_phone: phone,
+      p_team: team,
+      p_members: members ? Number(members) : null,
+      p_project: project || null,
+      p_note: note || null,
+    });
+    return { stored: "database" };
+  } catch (e) {
+    const missing = e instanceof DbError && (e.unavailable || /unknown consultant/.test(e.message));
+    if (!missing) throw e;
+  }
+  const rows = readTbcLocal();
+  rows.push({
+    id: `T${Date.now()}`, consultantId, name, email, phone, team, members: members || "", project: project || "",
+    note: note || "", called: false, createdAt: new Date().toISOString(),
+  });
+  writeTbcLocal(rows);
+  return { stored: "browser" };
+}
+
+const toTbc = (r) => ({
+  id: r.id, name: r.name, email: r.email, phone: r.phone, team: r.team_code, members: r.members ?? "",
+  project: r.project ?? "", note: r.note ?? "", called: !!r.called, createdAt: r.created_at,
+});
+
+function demoTbcEnquiries(token) {
+  const agentId = token.slice(DEMO_AGENT_PREFIX.length);
+  const ago = (h) => new Date(Date.now() - h * 3600 * 1000).toISOString();
+  const sample = [
+    { id: `${token}-t0`, name: "Meenakshi R", email: "meenakshi@example.com", phone: "9876512340", team: "RI", members: 4, project: "Baba Pasumai Nagar", note: "Family of four relatives, interested in plots.", called: false, createdAt: ago(5) },
+    { id: `${token}-t1`, name: "Arjun V", email: "arjun@example.com", phone: "9876512341", team: "FI", members: 6, project: "", note: "", called: false, createdAt: ago(30) },
+  ];
+  let ticked = {};
+  try {
+    ticked = JSON.parse(localStorage.getItem(DEMO_CALLED_KEY) || "{}");
+  } catch {
+    /* storage unavailable */
+  }
+  const mine = readTbcLocal().filter((r) => r.consultantId === agentId);
+  return [...mine, ...sample.map((r) => ({ ...r, called: !!ticked[r.id] }))];
+}
+
+export async function agentTbcEnquiries(token, agentId) {
+  if (isDemoAgentToken(token)) return demoTbcEnquiries(token);
+  try {
+    return (await rpc("consultant_tbc_enquiries", { p_token: token })).map(toTbc);
+  } catch (e) {
+    if (!(e instanceof DbError && e.unavailable)) throw e;
+    // supabase/tbc.sql is not installed yet: show what was kept in this browser, marked as such.
+    return readTbcLocal().filter((r) => r.consultantId === agentId).map((r) => ({ ...r, viaBrowser: true }));
+  }
+}
+
+export function setTbcCalled(token, id, called) {
+  const rows = readTbcLocal();
+  const hit = rows.find((r) => r.id === id);
+  if (hit) {
+    hit.called = called;
+    writeTbcLocal(rows);
+    return Promise.resolve();
+  }
+  if (isDemoAgentToken(token)) {
+    // sample rows are not stored: remember their tick in the demo "called" map
+    const m = JSON.parse(localStorage.getItem(DEMO_CALLED_KEY) || "{}");
+    m[id] = called;
+    localStorage.setItem(DEMO_CALLED_KEY, JSON.stringify(m));
+    return Promise.resolve();
+  }
+  return rpc("consultant_set_tbc_called", { p_token: token, p_id: id, p_called: called });
+}
+
 // ---- agent ----------------------------------------------------------------
 // Demo consultant login (local dev server only): the sample consultants sign in with their contact
 // number and Agent@<pincode>, even when the database has no such account. Nothing reaches the database.

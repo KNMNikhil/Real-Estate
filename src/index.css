@@ -5152,110 +5152,130 @@ a.contact__value:hover {
     transform: scaleX(1.06);
   }
 }
-.tbc__steps {
+.tbc__teams {
   list-style: none;
-  margin: 20px 0 0;
+  margin: 18px 0 0;
   padding: 0;
   display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 14px;
 }
-.tbc__steps li {
-  display: flex;
-  gap: 16px;
-  align-items: flex-start;
-  padding: 18px 20px;
-  border-radius: 20px;
+.tbc__team {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 26px 16px 22px;
+  text-align: center;
+  border-radius: 22px;
   background: #fff;
   border: 1px solid #ece7dc;
-  box-shadow: 0 8px 22px rgba(20, 22, 31, 0.06);
+  box-shadow: 0 10px 26px rgba(20, 22, 31, 0.08);
 }
-.tbc__steps h3,
-.tbc__twin h3 {
-  margin: 0 0 4px;
-  font-size: 1.1rem;
+.tbc__team-num {
+  position: absolute;
+  top: 12px;
+  left: 14px;
+  font-size: 0.85rem;
+  color: #8a8fa6;
 }
-.tbc__steps p,
-.tbc__twin p {
-  margin: 0;
-  color: #4a4f63;
+.tbc__team-code {
+  font-size: 2.2rem;
+  font-weight: 900 !important;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  background: linear-gradient(120deg, #ffb347, #ff7a59);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
-.tbc__num {
-  flex: none;
-  width: 40px;
-  height: 40px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  font-weight: 800 !important;
-  color: #1b1450;
-  background: linear-gradient(135deg, #ffe29a, #ffb347);
+.tbc__team--fi .tbc__team-code {
+  background: linear-gradient(120deg, #5b7cff, #9a5cff);
+  -webkit-background-clip: text;
+  background-clip: text;
 }
-.tbc__twin {
-  margin-top: 20px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
+.tbc__team--abr .tbc__team-code {
+  background: linear-gradient(120deg, #20b486, #1b8fb4);
+  -webkit-background-clip: text;
+  background-clip: text;
 }
-.tbc__twin > div {
-  padding: 20px;
-  border-radius: 20px;
-  background: linear-gradient(135deg, #eaf0ff, #f6efff);
+.tbc__quote {
+  margin: 24px 0 0;
+  padding: 26px 22px;
+  text-align: center;
+  font-size: clamp(1.3rem, 3.4vw, 1.9rem);
+  font-weight: 700 !important;
+  color: #fff;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #0b0d1f, #1b1450 60%, #3a1a5c);
+  box-shadow: 0 16px 40px rgba(27, 20, 80, 0.3);
 }
 .tbc__join {
-  margin-top: 64px;
+  margin-top: 56px;
   padding: 44px 24px;
   text-align: center;
   border-radius: 32px;
   background: linear-gradient(135deg, #fff4d6, #ffe3cf 55%, #eaf0ff);
 }
-.tbc__logo-btn {
+.tbc__cta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  margin: 22px 0 18px;
+}
+.tbc__cta-btn {
   display: inline-flex;
   align-items: center;
-  gap: 16px;
-  margin: 8px 0 18px;
-  padding: 14px 26px 14px 16px;
+  gap: 10px;
+  padding: 15px 30px;
   border-radius: 999px;
+  font-size: 1.05rem;
+  font-weight: 700 !important;
   text-decoration: none;
-  color: #fff;
-  background: #0b0d1f;
-  box-shadow: 0 14px 34px rgba(11, 13, 31, 0.35);
   transition: transform 0.15s, box-shadow 0.15s;
 }
-.tbc__logo-btn:hover {
+.tbc__cta-btn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 18px 40px rgba(11, 13, 31, 0.45);
 }
-.tbc__logo-btn .logo {
-  height: auto;
+.tbc__cta-btn--primary {
+  color: #1b1450;
+  background: linear-gradient(135deg, #ffe29a, #ffb347);
+  box-shadow: 0 12px 28px rgba(255, 179, 71, 0.45);
 }
-.tbc__logo-btn span:nth-child(2) {
-  display: grid;
-  text-align: left;
-}
-.tbc__logo-btn strong {
-  font-size: 1.15rem;
-}
-.tbc__logo-btn small {
-  color: #ffd98a;
-  font-size: 0.9rem;
-}
-.tbc__logo-arrow {
-  font-size: 1.5rem;
-  color: #ffb347;
+.tbc__cta-btn--ghost {
+  color: #fff;
+  background: #0b0d1f;
+  box-shadow: 0 12px 28px rgba(11, 13, 31, 0.3);
 }
 @media (max-width: 760px) {
   .tbc__diagram {
     grid-template-columns: 1fr;
+    gap: 8px;
     padding: 28px 16px;
   }
+  /* A vertical arrow with its own height, so it never overlaps the buyers or the seller. */
   .tbc__arrow {
-    transform: rotate(90deg);
-    width: 120px;
+    position: relative;
+    width: 48px;
+    height: 110px;
     justify-self: center;
     animation: none;
   }
-  .tbc__twin {
+  .tbc__arrow svg {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 110px;
+    height: 40px;
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
+  .tbc__teams {
     grid-template-columns: 1fr;
+  }
+  .tbc__cta-btn {
+    width: 100%;
+    justify-content: center;
   }
 }
 
@@ -5756,5 +5776,343 @@ a.contact__value:hover {
     flex: 0 0 40px;
     width: 40px;
     height: 38px;
+  }
+}
+
+/* ===== TBC get started + projects ===== */
+.tbc__page-head {
+  margin: 28px 0 0;
+  text-align: center;
+}
+.tbc__page-head h1 {
+  margin: 14px 0 8px;
+  font-size: clamp(1.6rem, 4.6vw, 2.5rem);
+}
+.tbc__badge--dark {
+  color: #94650f;
+  border-color: rgba(148, 101, 15, 0.45);
+}
+.tbc__start {
+  margin-top: 28px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  gap: 22px;
+  align-items: start;
+}
+.tbc__form h2 {
+  margin: 0 0 12px;
+  font-size: 1.3rem;
+}
+.tbc__pick {
+  border: 0;
+  margin: 0 0 14px;
+  padding: 0;
+}
+.tbc__pick-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.tbc__pick-opt {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 14px 8px;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 16px;
+  border: 2px solid #ece7dc;
+  background: #fff;
+}
+.tbc__pick-opt input {
+  position: absolute;
+  opacity: 0;
+}
+.tbc__pick-opt strong {
+  font-size: 1.3rem;
+}
+.tbc__pick-opt span {
+  font-size: 0.8rem;
+  color: #4a4f63;
+}
+.tbc__pick-opt.is-on {
+  border-color: #ffb347;
+  background: #fff4d6;
+}
+.tbc__pick-opt:focus-within {
+  outline: 2px solid #1b1450;
+  outline-offset: 2px;
+}
+.tbc__hero--projects .tbc__letters--sm {
+  font-size: clamp(3.4rem, 13vw, 6.5rem);
+  line-height: 1.2;
+  padding-bottom: 0.08em;
+}
+.proj {
+  margin-top: 32px;
+  padding: 28px clamp(16px, 4vw, 36px) 32px;
+  border-radius: 32px;
+  background: #fff;
+  border: 1px solid #ece7dc;
+  box-shadow: 0 20px 50px rgba(20, 22, 31, 0.1);
+}
+.proj__top {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.proj__no {
+  flex: none;
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  font-size: 1.4rem;
+  font-weight: 800 !important;
+  color: #1b1450;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffe29a, #ffb347);
+}
+.proj__top h2 {
+  margin: 0;
+  font-size: clamp(1.5rem, 4.4vw, 2.2rem);
+}
+.proj__sub {
+  margin: 4px 0 0;
+  font-weight: 700 !important;
+  color: #1b1450;
+}
+.proj__loc {
+  margin: 2px 0 0;
+  color: #4a4f63;
+}
+.proj__offer {
+  position: relative;
+  margin-top: 24px;
+  padding: 26px 20px 22px;
+  text-align: center;
+  color: #fff;
+  border-radius: 26px;
+  background: radial-gradient(circle at 85% 0%, rgba(255, 179, 71, 0.4), transparent 55%), linear-gradient(135deg, #0b0d1f, #1b1450 60%, #3a1a5c);
+}
+.proj__ribbon {
+  display: inline-block;
+  padding: 6px 16px;
+  font-size: 0.8rem;
+  font-weight: 800 !important;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #1b1450;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffe29a, #ffb347);
+}
+.proj__offer p {
+  margin: 10px 0 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #ffd98a;
+}
+.proj__offer strong {
+  display: block;
+  font-size: clamp(1.4rem, 5vw, 2.1rem);
+}
+.proj__flag {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  border: 1px solid rgba(255, 217, 138, 0.6);
+  border-radius: 999px;
+  color: #ffd98a;
+}
+.proj__facts {
+  list-style: none;
+  margin: 18px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.proj__facts li {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 16px 10px;
+  text-align: center;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #fff4d6, #ffe3cf 60%, #eaf0ff);
+}
+.proj__facts strong {
+  font-size: 1.8rem;
+  color: #1b1450;
+}
+.proj__facts span {
+  font-size: 0.85rem;
+  color: #4a4f63;
+}
+.proj__cols {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.proj__box {
+  padding: 20px;
+  border-radius: 20px;
+  background: #f7f6fb;
+}
+.proj__box h3 {
+  margin: 0 0 8px;
+  font-size: 1.15rem;
+}
+.proj__box p {
+  margin: 0 0 8px;
+}
+.proj__roman {
+  margin: 0;
+  padding-left: 22px;
+  list-style: lower-roman;
+  display: grid;
+  gap: 8px;
+}
+.proj__perks {
+  list-style: none;
+  margin: 18px 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.proj__perks li {
+  padding: 8px 16px;
+  font-size: 0.92rem;
+  border-radius: 999px;
+  color: #1b1450;
+  background: #eaf0ff;
+}
+.proj__perks li::before {
+  content: "✓ ";
+  color: #1f7a4d;
+}
+.proj__cta {
+  margin-top: 24px;
+  text-align: center;
+}
+.proj__back {
+  margin-top: 22px;
+  text-align: center;
+}
+@media (max-width: 760px) {
+  .tbc__start,
+  .proj__cols {
+    grid-template-columns: 1fr;
+  }
+  .proj__facts {
+    grid-template-columns: 1fr 1fr;
+  }
+  .tbc__pick-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== TBC mindset section ===== */
+.tbc__mind h2 {
+  text-align: center;
+}
+.tbc__mind-text {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 30px clamp(18px, 4vw, 44px) 14px;
+  text-align: center;
+  border-radius: 28px;
+  border: 1px solid #f0e3c6;
+  background: linear-gradient(160deg, #fffaf0, #fff4e3 55%, #f3f5ff);
+  box-shadow: 0 14px 34px rgba(194, 136, 60, 0.12);
+}
+.tbc__mind-text p {
+  margin: 0 0 16px;
+  font-size: 1.1rem;
+  line-height: 1.75;
+  text-wrap: balance;
+}
+.tbc__mind-text mark {
+  padding: 0 4px;
+  color: inherit;
+  font-weight: 600 !important;
+  border-radius: 6px;
+  background: linear-gradient(transparent 55%, rgba(255, 179, 71, 0.45) 55%);
+}
+.tbc__mind-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 2px 0 16px;
+  color: #d8922f;
+}
+.tbc__mind-divider i {
+  width: 70px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #e6b566);
+}
+.tbc__mind-divider i:last-child {
+  transform: scaleX(-1);
+}
+.tbc__mind-divider b {
+  font-size: 0.9rem;
+}
+.tbc__mind .tbc__quote {
+  margin-top: 20px;
+}
+.todo__kind--tbc {
+  color: #1b1450;
+  background: #ffe9bd;
+}
+
+/* Small phones: keep to-do rows inside the screen. */
+.todo-list > li {
+  min-width: 0;
+}
+@media (max-width: 420px) {
+  .todo {
+    flex-wrap: wrap;
+    gap: 8px 10px;
+    padding: 14px;
+  }
+  .todo__body {
+    flex: 1 1 calc(100% - 44px);
+  }
+  .todo__phone {
+    font-size: 1.3rem;
+  }
+  .todo__state {
+    margin-left: 38px;
+  }
+}
+
+/* Phones: the portal tabs share the width, so every tab (including TBC) is visible without swiping. */
+@media (max-width: 760px) {
+  .sidebar__nav {
+    gap: 6px;
+  }
+  .sidebar__nav .sidebar__link {
+    flex: 1 1 0;
+    min-width: 0;
+    justify-content: center;
+    padding-right: 10px;
+  }
+  .sidebar__nav .sidebar__label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+@media (max-width: 400px) {
+  .sidebar__nav .sidebar__slot {
+    display: none;
+  }
+  .sidebar__nav .sidebar__link {
+    padding: 0 8px;
   }
 }

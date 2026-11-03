@@ -16,7 +16,9 @@ export default function AppointmentItem({ item, done = false, onToggle, showDate
       <div className="todo__body">
         <div className="todo__top">
           <strong className="todo__name">{item.customerName}</strong>
-          <span className={`todo__kind todo__kind--${item.kind}`}>{item.kind === "sell" ? "Selling" : "Buying"}</span>
+          <span className={`todo__kind todo__kind--${item.kind}`}>
+            {item.kindLabel ?? (item.kind === "sell" ? "Selling" : "Buying")}
+          </span>
         </div>
         <a className="todo__phone" href={`tel:+91${phone}`}>
           {phone}
